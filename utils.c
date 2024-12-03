@@ -23,3 +23,18 @@ void	free_tokens(char **tokens)
 		free(tokens[i++]);
 	free(tokens);
 }
+
+char	*ft_strjoin_char(char *s, char c)
+{
+	char	*new_str;
+	int		len;
+
+	len = ft_strlen(s);
+	new_str = malloc(len + 2);
+	if (!new_str)
+		return (NULL);
+	ft_strlcpy(new_str, s, len + 1);
+	new_str[len] = c;
+	new_str[len + 1] = '\0';
+	return (new_str);
+}
