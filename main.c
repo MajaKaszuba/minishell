@@ -39,6 +39,8 @@ int	main(void)
 		}
 		// Obsługa pojedynczych cudzysłowów
 		single_bunny(tokens);
+		double_bunny(tokens);
+		
 		if (!tokens[0]) // Sprawdzenie, czy po przetwarzaniu coś zostało
 		{
 			free_tokens(tokens);
