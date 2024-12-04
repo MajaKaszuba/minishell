@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/11/27 16:02:36 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:31:46 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,15 @@ int	main(void)
 			free_tokens(tokens);
 			continue;
 		}
-		// Obsługa pojedynczych cudzysłowów
-		single_bunny(tokens);
-		double_bunny(tokens);
+		if (!validate_syntax(tokens))
+		{
+			free_tokens(tokens);
+			continue;
+		}
+		// Obsługa cudzysłowów
+		handle_bunnies(tokens, '\'', 0);
+		handle_bunnies(tokens, '"', 1);
+
 		
 		if (!tokens[0]) // Sprawdzenie, czy po przetwarzaniu coś zostało
 		{
@@ -54,18 +60,20 @@ int	main(void)
 		}
 		else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
 			builtin_cd(tokens);
+		else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
+			builtin_unset(tokens);
 		else
 		{
 			path = get_path(tokens[0]);
 			if (!path)
-				printf("\"%s\"?? What's that sweetie \U0001F633\n", tokens[0]);
+				shell_error(ft_strjoin("\"", ft_strjoin(tokens[0], "\" not found")), 127);
 			else
 			{
 				pid = fork();
-				if (pid == 0)
-					execve(path, tokens, NULL);
-				else
-					waitpid(pid, NULL, 0);
+				if (pid < 0)
+					shell_error("fork failed", 1);
+				if (pid == 0 && execve(path, tokens, NULL) == -1)
+					shell_error("execution failed", 126);
 				free(path);
 			}
 		}

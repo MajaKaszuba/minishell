@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:19 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/11/27 15:49:08 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:06:49 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@ char	*get_path(char *command)
 	path_env = getenv("PATH");
 	if (!path_env)
 		return (NULL);
-	paths = ft_split(path_env, ':');
+	paths = ft_split(path_env, ':'); //Dzieli path na katalogi
 	i = 0;
 	while (paths[i])
 	{
 		full_path = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(full_path, command);
-		if (access(full_path, X_OK) == 0)
+		full_path = ft_strjoin(full_path, command); //Tworzy pełną ścieżkę
+		if (access(full_path, X_OK) == 0) //Sprawdza,czy plik istnieje i jest wykonywalny
 		{
 			free_tokens(paths);
 			return (full_path);

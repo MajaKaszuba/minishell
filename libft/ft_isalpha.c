@@ -1,28 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin.c                                          :+:      :+:    :+:   */
+/*   ft_isalpha.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mkaszuba <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/27 15:43:15 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/11/27 15:50:12 by mkaszuba         ###   ########.fr       */
+/*   Created: 2024/02/28 17:08:48 by mkaszuba          #+#    #+#             */
+/*   Updated: 2024/02/28 17:15:26 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include <unistd.h>
+#include <stdio.h>
 
-#include "../include/minishell.h"
-
-void	builtin_cd(char **tokens)
+int	ft_isalpha(int c)
 {
-	if (tokens[1])
-	{
-		if (chdir(tokens[1]) == -1)
-			perror("cd");
-	}
-	else
-	{
-		char *home = getenv("HOME");
-		if (home && chdir(home) == -1)
-			perror("cd");
-	}
+	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
+		return (1);
+	return (0);
 }

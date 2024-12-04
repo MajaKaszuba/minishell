@@ -6,11 +6,39 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:29 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/11/27 15:50:56 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:40:38 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+int	validate_syntax(char **tokens)
+{
+	int	i;
+
+	i = 0;
+	while (tokens[i])
+	{
+		// Błędne znaki: ;;
+		if (ft_strncmp(tokens[i], ";", 2) == 0) // Porównanie znaku `;`
+		{
+			if (!tokens[i + 1] || ft_strncmp(tokens[i + 1], ";", 2) == 0)
+			{
+				shell_error("syntax error near unexpected token `;'", 2);
+				return (0);
+			}
+		}
+		// Błędne znaki: ><
+		if (ft_strncmp(tokens[i], ">", 2) == 0 && 
+			tokens[i + 1] && ft_strncmp(tokens[i + 1], "<", 2) == 0)
+		{
+			shell_error("syntax error near unexpected token `><'", 2);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
 
 void	free_tokens(char **tokens)
 {
@@ -37,4 +65,16 @@ char	*ft_strjoin_char(char *s, char c)
 	new_str[len] = c;
 	new_str[len + 1] = '\0';
 	return (new_str);
+}
+
+void	shell_error(char *message, int exit_code)
+{
+	if (message)
+	{
+		write(2, "minishell: ", 11);
+		write(2, message, ft_strlen(message));
+		write(2, "\n", 1);
+	}
+	if (exit_code >= 0 && exit_code != 1) // Tylko w przypadku krytycznego błędu
+		exit(exit_code);
 }

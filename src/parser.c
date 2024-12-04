@@ -6,12 +6,31 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/11/27 16:23:11 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/04 14:14:45 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+char	*get_env_value(char *token, int start, int end)
+{
+	char	*var_name;
+	char	*env_value;
+	char	*result;
+
+	var_name = ft_substr(token, start, end - start + 1);
+	if (!var_name)
+		return (NULL);
+	env_value = getenv(var_name);
+	if (env_value)
+		result = ft_strdup(env_value);
+	else
+		result = ft_strdup(""); // Jeśli zmienna nie istnieje, zwracamy pusty ciąg
+	free(var_name);
+	return (result);
+}
+
+// Rozszerza zmienne środowiskowe w tokenie
 char	*expand_env_variables(char *token)
 {
 	char	*result;
@@ -25,27 +44,25 @@ char	*expand_env_variables(char *token)
 	i = 0;
 	while (token[i])
 	{
-		if (token[i] == '$' && token[i + 1] != '\0') // Znaleziono '$'
+		if (token[i] == '$' && token[i + 1] != '\0')
 		{
 			start = i + 1;
 			while (token[i + 1] && (ft_isalnum(token[i + 1]) || token[i + 1] == '_'))
 				i++;
-			env_value = get_env_value(token, start, i);
-			if (!env_value) // Obsługa błędów
-			{
-				free(result);
-				return (NULL);
-			}
-			result = append_env_value(result, env_value);
+			env_value = get_env_value(token, start, i); // Pobierz wartość zmiennej
+			if (!env_value)
+				return (NULL); // Obsługa błędów pamięci
+			result = ft_strjoin(result, env_value); // Połącz z wynikiem
 			free(env_value);
 		}
 		else
-			result = append_char(result, token[i]); // Dodaj bieżący znak
+			result = ft_strjoin_char(result, token[i]); // Dodaj bieżący znak
 		i++;
 	}
 	return (result);
 }
 
+// Szuka $
 void	are_we_rich(char **tokens)
 {
 	int		i;
@@ -54,9 +71,9 @@ void	are_we_rich(char **tokens)
 	i = 0;
 	while (tokens[i])
 	{
-		if (ft_strchr(tokens[i], '$')) // Sprawdź, czy token zawiera '$'
+		if (ft_strchr(tokens[i], '$'))
 		{
-			expanded = expand_env_variables(tokens[i]);
+			expanded = expand_env_variables(tokens[i]); // Rozszerza zmienne
 			free(tokens[i]);
 			tokens[i] = expanded;
 		}
@@ -71,33 +88,26 @@ int	find_closing_quote(char **tokens, int start, char quote_type)
 	i = start;
 	while (tokens[i])
 	{
-		// Jeśli cudzysłów zamykający jest w tym samym tokenie
-		if (i == start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
-			return (i);
-		// Jeśli cudzysłów zamykający jest w innym tokenie
-		else if (i != start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
+		if ((i == start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type) || 
+			(i != start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type))
 			return (i);
 		i++;
 	}
 	return (-1); // Brak zamykającego cudzysłowu
 }
 
+// Łączy tokeny, usuwając cudzysłowy i łącząc w jeden ciąg
 char	*merge_tokens(char **tokens, int start, int end, char quote_type)
 {
 	char	*merged;
-	char	*temp;
 	int		i;
 
 	merged = ft_strdup(tokens[start] + 1); // Pomijamy otwierający cudzysłów
 	i = start + 1;
 	while (i <= end)
 	{
-		temp = merged;
 		merged = ft_strjoin(merged, " ");
-		free(temp);
-		temp = merged;
 		merged = ft_strjoin(merged, tokens[i]);
-		free(temp);
 		i++;
 	}
 	if (merged[ft_strlen(merged) - 1] == quote_type)
@@ -105,6 +115,7 @@ char	*merge_tokens(char **tokens, int start, int end, char quote_type)
 	return (merged);
 }
 
+// Usuwa tokeny połączone w jeden
 void	remove_merged_tokens(char **tokens, int start, int end)
 {
 	int	i;
@@ -123,7 +134,7 @@ void	remove_merged_tokens(char **tokens, int start, int end)
 	}
 }
 
-void	single_bunny(char **tokens)
+void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 {
 	int		i;
 	int		closing_quote;
@@ -132,63 +143,33 @@ void	single_bunny(char **tokens)
 	i = 0;
 	while (tokens[i])
 	{
-		// Znajdź otwierający pojedynczy cudzysłów
-		if (tokens[i][0] == '\'')
+		if (tokens[i][0] == quote_type) // Znalezienie otwierającego cudzysłowu
 		{
-			closing_quote = find_closing_quote(tokens, i, '\'');
-			if (closing_quote == -1) // Brak zamykającego cudzysłowu
-			{
-				printf("Error: unmatched single quote in input.\n");
-				return ;
-			}
-			// Połącz tokeny w jeden ciąg
-			merged = merge_tokens(tokens, i, closing_quote, '\'');
-			free(tokens[i]);
-			tokens[i] = merged;
-			// Usuń przetworzone tokeny
-			remove_merged_tokens(tokens, i, closing_quote);
-		}
-		else
-			i++;
-	}
-}
-
-void	double_bunny(char **tokens)
-{
-	int		i;
-	int		closing_quote;
-	char	*merged;
-
-	i = 0;
-	while (tokens[i])
-	{
-		if (tokens[i][0] == '"') // Znalezienie otwierającego cudzysłowu
-		{
-			// Sprawdź, czy zamykający cudzysłów jest w tym samym tokenie
-			if (tokens[i][ft_strlen(tokens[i]) - 1] == '"')
+			// Sprawdza, czy zamykający cudzysłów jest w tym samym tokenie
+			if (tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
 			{
 				merged = ft_strdup(tokens[i] + 1);
 				merged[ft_strlen(merged) - 1] = '\0';
 				free(tokens[i]);
 				tokens[i] = merged;
-				are_we_rich(tokens + i); // Zamień zmienne środowiskowe
+				if (expand_env)
+					are_we_rich(tokens + i);
 				i++;
 				continue;
 			}
 			// Szukanie zamykającego cudzysłowu w innych tokenach
-			closing_quote = find_closing_quote(tokens, i, '"');
-			if (closing_quote == -1) // Błąd: brak zamykającego cudzysłowu
+			closing_quote = find_closing_quote(tokens, i, quote_type);
+			if (closing_quote == -1)
 			{
-				printf("Error: unmatched double quote in input.\n");
+				shell_error(ft_strjoin("unmatched ", ft_strjoin_char("", quote_type)), 2);
 				return ;
 			}
 			// Łączenie tokenów w jeden ciąg
-			merged = merge_tokens(tokens, i, closing_quote, '"');
+			merged = merge_tokens(tokens, i, closing_quote, quote_type);
 			free(tokens[i]);
 			tokens[i] = merged;
-			// Zamień zmienne środowiskowe w wynikowym ciągu
-			are_we_rich(tokens + i);
-			// Usunięcie połączonych tokenów
+			if (expand_env)
+				are_we_rich(tokens + i);
 			remove_merged_tokens(tokens, i, closing_quote);
 		}
 		else
