@@ -45,7 +45,7 @@ int	main(void)
 		// Obsługa cudzysłowów
 		handle_bunnies(tokens, '\'', 0);
 		handle_bunnies(tokens, '"', 1);
-
+		are_we_rich(tokens);
 		
 		if (!tokens[0]) // Sprawdzenie, czy po przetwarzaniu coś zostało
 		{

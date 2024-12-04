@@ -12,8 +12,6 @@
 
 #include "../include/minishell.h"
 
-#include "../include/minishell.h"
-
 void	builtin_cd(char **tokens)
 {
 	char	*home;
