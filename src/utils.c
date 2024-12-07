@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:29 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/04 17:35:26 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/07 12:44:18 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	free_tokens(char **tokens)
 	int	i;
 
 	if (!tokens)
-		return;
+		return ;
 	i = 0;
 	while (tokens[i])
 		free(tokens[i++]);

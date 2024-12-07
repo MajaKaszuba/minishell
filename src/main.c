@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/04 17:38:20 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/07 12:45:51 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,41 +21,43 @@ int	main(void)
 
 	while (1)
 	{
-		input = readline("\001\033[38;2;255;105;180m\002Barbie Bash \U0001F485\001\033[0m\002: ");
-		if (!input)
+		input = readline("\001\033[38;2;255;105;180m\002Barbie Bash 💅\001\033[0m\002: ");
+		if (!input) // Sprawdzenie, czy użytkownik nacisnął Ctrl+D
 		{
 			printf("\n\033[38;2;255;105;180mBye Bitch ;*\033[0m\n");
 			break;
 		}
-		if (*input)
+		if (*input) // Dodanie do historii tylko, jeśli coś podano
 			add_history(input);
 		tokens = ft_split(input, ' ');
-		free(input);
+		free(input); // Zwolnienie input
 
-		if (!tokens[0])
+		if (!tokens[0]) // Brak polecenia
 		{
 			free_tokens(tokens);
+			tokens = NULL;
 			continue;
 		}
-		if (!validate_syntax(tokens))
-		{
-			free_tokens(tokens);
-			continue;
-		}
-		// Obsługa cudzysłowów
+
+		// Obsługa cudzysłowów i zmiennych
 		handle_bunnies(tokens, '\'', 0);
 		handle_bunnies(tokens, '"', 1);
 		are_we_rich(tokens);
-		
-		if (!tokens[0]) // Sprawdzenie, czy po przetwarzaniu coś zostało
+
+		// Jeśli po przetwarzaniu nie ma polecenia
+		if (!tokens[0])
 		{
 			free_tokens(tokens);
+			tokens = NULL;
 			continue;
 		}
+
+		// Obsługa wbudowanych poleceń
 		if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
 		{
 			printf("\033[38;2;255;105;180mBye Bitch ;*\033[0m\n");
 			free_tokens(tokens);
+			tokens = NULL;
 			break;
 		}
 		else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
@@ -66,18 +68,20 @@ int	main(void)
 		{
 			path = get_path(tokens[0]);
 			if (!path)
-				shell_error(ft_strjoin("\"", ft_strjoin(tokens[0], "\" not found")), 127);
+				printf("\"%s\"?? What's that sweetie \U0001F633\n", tokens[0]);
 			else
 			{
 				pid = fork();
-				if (pid < 0)
-					shell_error("fork failed", 1);
-				if (pid == 0 && execve(path, tokens, NULL) == -1)
-					shell_error("execution failed", 126);
+				if (pid == 0)
+					execve(path, tokens, NULL);
+				else
+					waitpid(pid, NULL, 0);
 				free(path);
 			}
 		}
-		free_tokens(tokens);
+
+		free_tokens(tokens); // Zawsze zwalniamy pamięć po iteracji
+		tokens = NULL;
 	}
 	return (0);
 }
