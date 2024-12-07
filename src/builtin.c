@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:15 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/07 18:00:31 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/07 22:40:36 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	builtin_export(char **tokens)
 	char	*name;
 	char	*value;
 	char	*equal_sign;
+	char	**new_tokens;
 
 	i = 1; // Bo pomijamy zerowy token(export)
 	while(tokens[i])
@@ -60,9 +61,9 @@ void	builtin_export(char **tokens)
 		equal_sign = ft_strchr(tokens[i], '=');
 		if (equal_sign) //Znalazło = więc mamy format VAR=value
 		{
-			equal_sign = "\0"; //Rozdziela na nazwe i wartość tworząc dwa ciągi
-			name = tokens[i];
-			value = equal_sign + 1;
+			new_tokens = ft_split(tokens[i], '='); //Rozdziela na nazwe i wartość tworząc dwa ciągi
+			name = new_tokens[0];
+			value = new_tokens[1];
 			if (is_valid_identifier(name))
 				setenv(name, value, 1);
 			else
