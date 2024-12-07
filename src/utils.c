@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:29 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/07 12:44:18 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/07 18:02:00 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,4 +77,20 @@ void	shell_error(char *message, int exit_code)
 	}
 	if (exit_code >= 0 && exit_code != 1) // Tylko w przypadku krytycznego błędu
 		exit(exit_code);
+}
+
+int is_valid_identifier(const char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str || !(ft_isalpha(str[0]) || str[0] == '_')) // Musi zaczynać się od litery lub '_'
+		return (0);
+	while (str[i])
+	{
+		if (!(ft_isalnum(str[i]) || str[i] == '_' || str[i] == '=')) // Reszta musi być alfanumeryczna lub '_'
+			return (0);
+		i++;
+	}
+	return (1); // Jeśli wszystkie warunki spełnione
 }

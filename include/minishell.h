@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/04 17:35:26 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/07 18:02:22 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,13 @@ char	*get_path(char *command);
 //builtin.c
 void	builtin_cd(char **tokens);
 void	builtin_unset(char **tokens);
+void	builtin_export(char **tokens);
 
 //utils.c
 int		validate_syntax(char **tokens);
 void	free_tokens(char **tokens);
 char	*ft_strjoin_char(char *s, char c);
 void	shell_error(char *message, int exit_code);
+int		is_valid_identifier(const char *str);
 
 #endif
