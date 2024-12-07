@@ -12,7 +12,7 @@
 
 NAME = minishell
 
-CC = cc
+CC = @cc
 CFLAGS = -Wall -Wextra -Werror
 
 LIBFT_DIR = ./libft
@@ -32,6 +32,9 @@ OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
+	@echo ""
+	@echo "✨ minishell created ✨"
+	@echo ""
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -L$(LIBFT_DIR) -lft -lreadline
 
 $(LIBFT):
@@ -42,12 +45,17 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS)
+	@rm -f $(OBJS)
 	@make clean -s -C $(LIBFT_DIR)
-	rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)
+	@echo ""
+	@echo "🗑️  deleted 🗑️"
+	@echo ""
 
 fclean: clean
-	rm -f $(NAME)
+	@rm -f $(NAME)
 	@make fclean -s -C $(LIBFT_DIR)
 
-re: fclean all
+re:	fclean all
+
+.PHONY: all clean fclean re
