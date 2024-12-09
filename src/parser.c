@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/07 22:46:42 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/09 21:09:46 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,22 @@ char	*get_env_value(char *token, int start, int end)
 {
 	char	*var_name;
 	char	*env_value;
-	char	*result;
+//	char	*result;
 
 	var_name = ft_substr(token, start, end - start + 1);
 	if (!var_name)
-	{
-		free(var_name);
-		return (NULL);
-	}
+		return (ft_strdup(""));
 	env_value = getenv(var_name);
-	if (env_value)
-		result = ft_strdup(env_value);
-	else
-		result = ft_strdup(""); // Jeśli zmienna nie istnieje, zwracamy pusty ciąg
 	free(var_name);
-	return (result);
+	if (!env_value)
+		return (ft_strdup(""));
+	return (ft_strdup(env_value));
 }
 
 // Rozszerza zmienne środowiskowe w tokenie
 char	*expand_env_variables(char *token)
 {
+	char	*temp;
 	char	*result;
 	char	*env_value;
 	int		i;
@@ -43,7 +39,7 @@ char	*expand_env_variables(char *token)
 
 	result = ft_strdup(""); // Pusty wynik
 	if (!result)
-		return (NULL);
+		return (ft_strdup(""));
 	i = 0;
 	while (token[i])
 	{
@@ -54,12 +50,24 @@ char	*expand_env_variables(char *token)
 				i++;
 			env_value = get_env_value(token, start, i); // Pobierz wartość zmiennej
 			if (!env_value)
-				return (NULL); // Obsługa błędów pamięci
-			result = ft_strjoin(result, env_value); // Połącz z wynikiem
+				env_value = ft_strdup("");
+			if (!env_value)
+			{
+				free(result);
+				free(env_value);
+				return (ft_strdup("")); // Obsługa błędów pamięci
+			}
+			temp = ft_strjoin(result, env_value); // Połącz z wynikiem
+			free(result);
 			free(env_value);
+			result = temp;
 		}
 		else
-			result = ft_strjoin_char(result, token[i]); // Dodaj bieżący znak
+		{
+			temp = ft_strjoin_char(result, token[i]); // Dodaj bieżący znak
+			free(result);
+			result = temp;
+		}
 		i++;
 	}
 	return (result);

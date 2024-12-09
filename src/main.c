@@ -6,11 +6,36 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/07 18:01:11 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/08 02:44:27 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+static void execution(char *command, char **tokens, char **envp)
+{
+	if (ft_strchr(command, '/')) // Check if it's an absolute or relative path
+	{
+		if (access(command, X_OK) != 0) // Check for execute permissions
+			shell_error(ft_strjoin("error: no access to ", command), 126);
+		execve(command, tokens, envp); // Execute directly
+		shell_error(ft_strjoin("error: failed to run executable ", command), 1);
+		exit(errno); // Terminate child process on failure
+	}
+	else // If no '/' in command, use PATH-based lookup
+	{
+		char *path = get_path(command); // Custom function to search in PATH
+		if (!path)
+		{
+			shell_error(ft_strjoin("error: command not found: ", command), 1);
+			exit(127); // Return standard POSIX command not found error
+		}
+		execve(path, tokens, envp); // Execute command found in PATH
+		shell_error(ft_strjoin("error: failed to run executable ", path), 1);
+		free(path); // Free allocated path
+		exit(errno);
+	}
+}
 
 int	main(void)
 {
@@ -44,6 +69,7 @@ int	main(void)
 		handle_bunnies(tokens, '"', 1);
 		are_we_rich(tokens);
 
+
 		// Jeśli po przetwarzaniu nie ma polecenia
 		if (!tokens[0])
 		{
@@ -68,18 +94,31 @@ int	main(void)
 			builtin_export(tokens);
 		else
 		{
-			path = get_path(tokens[0]);
-			if (!path)
-				printf("\"%s\"?? What's that sweetie \U0001F633\n", tokens[0]);
-			else
+			path = get_path(tokens[0]); // Example of pre-determined path lookup
+			pid = fork();
+			if (pid == 0) // Child process
 			{
-				pid = fork();
-				if (pid == 0)
-					execve(path, tokens, NULL);
-				else
-					waitpid(pid, NULL, 0);
-				free(path);
+				if (path) // Pre-determined path case
+				{
+					execve(path, tokens, NULL); // Direct execve
+					perror("execve");
+					exit(errno); // Terminate on failure
+				}
+				else // Use execution for dynamic lookup
+				{
+					execution(tokens[0], tokens, NULL);
+					exit(EXIT_FAILURE); // Ensure failure exits
+				}
 			}
+			else if (pid > 0) // Parent process
+			{
+				waitpid(pid, NULL, 0); // Wait for the child process to finish
+			}
+			else // Fork failure
+			{
+				perror("fork");
+			}
+			free(path); // Free path if allocated
 		}
 
 		free_tokens(tokens); // Zawsze zwalniamy pamięć po iteracji
