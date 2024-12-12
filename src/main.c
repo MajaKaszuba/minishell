@@ -12,13 +12,15 @@
 
 #include "../include/minishell.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char	*input;
 	char	**tokens;
 	char	*path;
 	pid_t	pid;
 
+	(void)argc;
+	(void)argv;
 	setup_signal_handlers(); // Ustawienie sygnałów
 	while (1)
 	{
@@ -68,7 +70,8 @@ int	main(void)
 			builtin_unset(tokens);
 		else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
 			builtin_export(tokens);
-
+		else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
+			builtin_env(envp);
 		else
 		{
 			path = get_path(tokens[0]);

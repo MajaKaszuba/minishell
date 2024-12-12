@@ -42,6 +42,7 @@ void	execution(char *command, char **tokens, char **envp);
 void	builtin_cd(char **tokens);
 void	builtin_unset(char **tokens);
 void	builtin_export(char **tokens);
+void	builtin_env(char **envp);
 
 //signals.c
 void	sigint_handler(int signo);

@@ -79,3 +79,20 @@ void	builtin_export(char **tokens)
 		i++;
 	}
 }
+
+void	builtin_env(char **envp)
+{
+	int	i;
+
+	if (!envp || !*envp) // Sprawdzenie, czy envp istnieje i nie jest puste
+	{
+		shell_error("env: environment is empty", 1);
+		return ;
+	}
+	i = 0;
+	while (envp[i]) // Iteracja po wszystkich zmiennych środowiskowych
+	{
+		ft_putendl_fd(envp[i], 1); // Wypisanie każdej zmiennej na stdout
+		i++;
+	}
+}
