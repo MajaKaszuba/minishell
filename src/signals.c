@@ -1,30 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tests.c                                            :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: olaf <olaf@student.1337.ma>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/07 23:55:58 by olaf              #+#    #+#             */
-/*   Updated: 2024/12/08 02:29:14 by olaf             ###   ########.fr       */
+/*   Created: 2024/12/12 17:18:35 by olaf              #+#    #+#             */
+/*   Updated: 2024/12/12 17:28:59 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void  execution(char *command, char **tokens, char **paths)
+void    sigint_handler(int signo)
 {
-  if (ft_strchr(command, '/'))
-    {
-    	if (access(tokens[1], X_OK) == -1)
-        {
-          shell_error(ft_strjoin("error: no access", command), 1);
-          return ;
-        }
-        if (execve(command, tokens, paths) == -1)
-        {
-        	shell_error(ft_strjoin("error: failed to run executable", command), 1);
-        	return ;
-        }
-    }
+    (void)signo;
+    rl_replace_line("", 0);
+    rl_on_new_line();
+    write(STDOUT_FILENO, "\n", 1);
+    rl_redisplay();
+}
+
+void    setup_signal_handlers(void)
+{
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, SIG_IGN);
 }

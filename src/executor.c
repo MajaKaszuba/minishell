@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:19 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/04 17:35:26 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/12 17:17:43 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,29 @@ char	*get_path(char *command)
 	}
 	free_tokens(paths);
 	return (NULL);
+}
+
+void	execution(char *command, char **tokens, char **envp)
+{
+	if (ft_strchr(command, '/'))
+	{
+		if (access(command, X_OK) != 0)
+			shell_error(ft_strjoin("error: no access to ", command), 126);
+		execve(command, tokens, envp);
+		shell_error(ft_strjoin("error: failed to run executable ", command), 1);
+		exit(errno);
+	}
+	else
+	{
+		char *path = get_path(command);
+		if (!path)
+		{
+			shell_error(ft_strjoin("error: command not found: ", command), 1);
+			exit(127);
+		}
+		execve(path, tokens, envp);
+		shell_error(ft_strjoin("error: failed to run executable ", path), 1);
+		free(path);
+		exit(errno);
+	}
 }

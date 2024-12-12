@@ -6,36 +6,11 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/08 02:44:27 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/12 17:21:09 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
-
-static void execution(char *command, char **tokens, char **envp)
-{
-	if (ft_strchr(command, '/')) // Check if it's an absolute or relative path
-	{
-		if (access(command, X_OK) != 0) // Check for execute permissions
-			shell_error(ft_strjoin("error: no access to ", command), 126);
-		execve(command, tokens, envp); // Execute directly
-		shell_error(ft_strjoin("error: failed to run executable ", command), 1);
-		exit(errno); // Terminate child process on failure
-	}
-	else // If no '/' in command, use PATH-based lookup
-	{
-		char *path = get_path(command); // Custom function to search in PATH
-		if (!path)
-		{
-			shell_error(ft_strjoin("error: command not found: ", command), 1);
-			exit(127); // Return standard POSIX command not found error
-		}
-		execve(path, tokens, envp); // Execute command found in PATH
-		shell_error(ft_strjoin("error: failed to run executable ", path), 1);
-		free(path); // Free allocated path
-		exit(errno);
-	}
-}
 
 int	main(void)
 {
@@ -44,6 +19,7 @@ int	main(void)
 	char	*path;
 	pid_t	pid;
 
+	setup_signal_handlers(); // Ustawienie sygnałów
 	while (1)
 	{
 		input = readline("\001\033[38;2;255;105;180m\002Barbie Bash 💅\001\033[0m\002: ");
@@ -92,33 +68,34 @@ int	main(void)
 			builtin_unset(tokens);
 		else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
 			builtin_export(tokens);
+
 		else
 		{
-			path = get_path(tokens[0]); // Example of pre-determined path lookup
+			path = get_path(tokens[0]);
 			pid = fork();
-			if (pid == 0) // Child process
+			if (pid == 0)
 			{
-				if (path) // Pre-determined path case
+				if (path)
 				{
-					execve(path, tokens, NULL); // Direct execve
+					execve(path, tokens, NULL);
 					perror("execve");
-					exit(errno); // Terminate on failure
+					exit(errno);
 				}
-				else // Use execution for dynamic lookup
+				else
 				{
 					execution(tokens[0], tokens, NULL);
-					exit(EXIT_FAILURE); // Ensure failure exits
+					exit(EXIT_FAILURE);
 				}
 			}
-			else if (pid > 0) // Parent process
+			else if (pid > 0)
 			{
-				waitpid(pid, NULL, 0); // Wait for the child process to finish
+				waitpid(pid, NULL, 0);
 			}
-			else // Fork failure
+			else
 			{
 				perror("fork");
 			}
-			free(path); // Free path if allocated
+			free(path);
 		}
 
 		free_tokens(tokens); // Zawsze zwalniamy pamięć po iteracji

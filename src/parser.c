@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/09 21:09:46 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/12 17:03:35 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ char	*get_env_value(char *token, int start, int end)
 {
 	char	*var_name;
 	char	*env_value;
-//	char	*result;
 
 	var_name = ft_substr(token, start, end - start + 1);
 	if (!var_name)

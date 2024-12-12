@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/08 02:41:45 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/12 17:20:14 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <unistd.h> //fork and execve
 # include <stdio.h>
 # include <stdlib.h>
+# include <signal.h>
 # include <errno.h>
 # include <sys/wait.h> //waitpid
 # include <readline/history.h> //history library
@@ -35,11 +36,16 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env);
 
 //executor.c
 char	*get_path(char *command);
+void	execution(char *command, char **tokens, char **envp);
 
 //builtin.c
 void	builtin_cd(char **tokens);
 void	builtin_unset(char **tokens);
 void	builtin_export(char **tokens);
+
+//signals.c
+void	sigint_handler(int signo);
+void	setup_signal_handlers(void);
 
 //utils.c
 int		validate_syntax(char **tokens);
