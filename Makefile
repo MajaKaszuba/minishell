@@ -27,6 +27,7 @@ SRCS = $(SRC_DIR)/main.c \
 		$(SRC_DIR)/executor.c \
 		$(SRC_DIR)/builtin.c \
 		$(SRC_DIR)/signals.c \
+		$(SRC_DIR)/redir.c	\
 
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

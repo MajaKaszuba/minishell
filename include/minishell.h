@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/15 17:22:47 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/16 18:24:15 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,10 @@
 # include <stdlib.h>
 # include <signal.h>
 # include <errno.h>
+# include <fcntl.h>
 # include <sys/wait.h> //waitpid
 # include <readline/history.h> //history library
 # include <readline/readline.h> //readline
-
-//main.c
 
 //parser.c
 char	*get_env_value(char *token, int start, int end);
@@ -49,6 +48,11 @@ void	builtin_env(char **envp);
 //signals.c
 void	sigint_handler(int signo);
 void	setup_signal_handlers(void);
+
+//redir.c
+int	redirect_output(char *filename);
+int	redirect_input(char *filename);
+int	handle_redirections(char **tokens);
 
 //utils.c
 int		validate_syntax(char **tokens);

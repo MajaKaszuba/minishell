@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/15 17:37:15 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2024/12/16 18:35:50 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,13 @@ int	main(int argc, char **argv, char **envp)
 			handle_bunnies(tokens, '\'', 0);
 			handle_bunnies(tokens, '"', 1);
 			are_we_rich(tokens);
+
+			// Obsługa redirekcji
+			if (handle_redirections(tokens) == -1)
+			{
+				free_tokens(tokens);
+				continue;
+			}
 
 			// Jeśli po przetwarzaniu nie ma polecenia
 			if (!tokens[0])
