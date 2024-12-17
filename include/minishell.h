@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/16 18:24:15 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/17 16:22:46 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,9 @@ void	setup_signal_handlers(void);
 
 //redir.c
 int	redirect_output(char *filename);
+int	redirect_output_append(char *filename);
 int	redirect_input(char *filename);
+int	redirect_input_heredoc(char *delimiter);
 int	handle_redirections(char **tokens);
 
 //utils.c

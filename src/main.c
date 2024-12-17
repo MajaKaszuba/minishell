@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/16 18:35:50 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/17 15:41:17 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,20 +109,6 @@ int	main(int argc, char **argv, char **envp)
 			handle_bunnies(tokens, '"', 1);
 			are_we_rich(tokens);
 
-			// Obsługa redirekcji
-			if (handle_redirections(tokens) == -1)
-			{
-				free_tokens(tokens);
-				continue;
-			}
-
-			// Jeśli po przetwarzaniu nie ma polecenia
-			if (!tokens[0])
-			{
-				free_tokens(tokens);
-				continue;
-			}
-
 			// Obsługa wbudowanych poleceń
 			if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
 			{
@@ -143,6 +129,12 @@ int	main(int argc, char **argv, char **envp)
 				pid = fork();
 				if (pid == 0)
 				{
+					if (handle_redirections(tokens) == -1)
+					{
+						perror("redirection error");
+						free_tokens(tokens);
+						exit(EXIT_FAILURE);
+					}
 					path = get_path(tokens[0]);
 					if (path)
 					{
