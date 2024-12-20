@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/17 16:22:46 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/20 13:51:39 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,15 @@
 # include <readline/history.h> //history library
 # include <readline/readline.h> //readline
 
+typedef struct	s_shell
+{
+	char	**envp;         // Kopia envp
+	char	**custom_env;   // Custom zmienne dodane przez export
+}				t_shell;
+
 //parser.c
+void	free_custom_env(char **custom_env);
+char	**init_env(char **envp);
 char	*get_env_value(char *token, int start, int end);
 char	*expand_env_variables(char *token);
 void	are_we_rich(char **tokens);
@@ -41,9 +49,9 @@ void	execute_single_command(char *command, char **env);
 
 //builtin.c
 void	builtin_cd(char **tokens);
-void	builtin_unset(char **tokens);
-void	builtin_export(char **tokens);
-void	builtin_env(char **envp);
+void	builtin_unset(t_shell *shell, char **tokens);
+void	builtin_export(t_shell *shell, char **tokens);
+void	builtin_env(t_shell *shell);
 
 //signals.c
 void	sigint_handler(int signo);

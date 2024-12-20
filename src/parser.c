@@ -6,11 +6,41 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/17 15:03:47 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/20 13:55:38 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+void	free_custom_env(char **custom_env)
+{
+	int i = 0;
+
+	while (custom_env[i])
+	{
+		free(custom_env[i]); // Zwolnij każdą zmienną środowiskową
+		i++;
+	}
+	free(custom_env); // Zwolnij tablicę wskaźników
+}
+
+char	**init_env(char **envp)
+{
+	int i = 0;
+	char **new_env;
+
+	while (envp[i])
+		i++;
+	new_env = malloc(sizeof(char *) * (i + 1)); // Alokacja miejsca na kopię
+	i = 0;
+	while (envp[i])
+	{
+		new_env[i] = ft_strdup(envp[i]); // Kopiowanie zmiennych
+		i++;
+	}
+	new_env[i] = NULL;
+	return (new_env);
+}
 
 char	*get_env_value(char *token, int start, int end)
 {

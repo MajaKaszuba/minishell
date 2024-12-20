@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:15 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/12 17:03:32 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/20 13:51:26 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,65 +34,61 @@ void	builtin_cd(char **tokens)
 	}
 }
 
-void	builtin_unset(char **tokens)
+void	builtin_unset(t_shell *shell, char **tokens)
 {
-	if (!tokens[1])
-	{
-		shell_error("unset: not enough arguments", 1);
-		return ;
-	}
-	if (unsetenv(tokens[1]) == -1) // Usuwanie zmiennej środowiskowej
-	{
-		shell_error(ft_strjoin("unset: failed to unset: ", tokens[1]), 1);
-	}
-}
+	int i;
 
-void	builtin_export(char **tokens)
-{
-	int		i;
-	char	*name;
-	char	*value;
-	char	*equal_sign;
-	char	**new_tokens;
-
-	i = 1; // Bo pomijamy zerowy token(export)
-	while(tokens[i])
+	if (!tokens[1]) // Brak argumentu
 	{
-		equal_sign = ft_strchr(tokens[i], '=');
-		if (equal_sign) //Znalazło = więc mamy format VAR=value
+		write(STDERR_FILENO, "unset: not enough arguments\n", 28);
+		return;
+	}
+
+	i = 0;
+	while (shell->custom_env && shell->custom_env[i])
+	{
+		if (ft_strncmp(shell->custom_env[i], tokens[1], ft_strlen(tokens[1])) == 0 &&
+			shell->custom_env[i][ft_strlen(tokens[1])] == '=')
 		{
-			new_tokens = ft_split(tokens[i], '='); //Rozdziela na nazwe i wartość tworząc dwa ciągi
-			name = new_tokens[0];
-			value = new_tokens[1];
-			if (is_valid_identifier(name))
-				setenv(name, value, 1);
-			else
-				shell_error(ft_strjoin("export1: not a valid identifier: ", tokens[i]), 1);
-		}
-		else //Nie ma = więc jest samo name
-		{
-			if (is_valid_identifier(tokens[i]))
-				setenv(tokens[i], "", 1); //Nie ma żadnej wartości więc puste
-			else
-				shell_error(ft_strjoin("export2: not a valid identifier: ", tokens[i]), 1);
+			free(shell->custom_env[i]); // Zwolnij pamięć
+			shell->custom_env[i] = NULL; // Usuń zmienną
+			return;
 		}
 		i++;
 	}
 }
 
-void	builtin_env(char **envp)
+void	builtin_export(t_shell *shell, char **tokens)
 {
-	int	i;
+	char	**new_env;
+	int		i;
+	int		j;
 
-	if (!envp || !*envp) // Sprawdzenie, czy envp istnieje i nie jest puste
-	{
-		shell_error("env: environment is empty", 1);
-		return ;
-	}
 	i = 0;
-	while (envp[i]) // Iteracja po wszystkich zmiennych środowiskowych
+	j = 0;
+	while (shell->custom_env && shell->custom_env[i])
+		i++;
+	new_env = malloc(sizeof(char *) * (i + 2)); // Nowa tablica z dodatkowym miejscem
+	while (shell->custom_env && shell->custom_env[j])
 	{
-		ft_putendl_fd(envp[i], 1); // Wypisanie każdej zmiennej na stdout
+		new_env[j] = shell->custom_env[j]; // Przekopiuj istniejące zmienne
+		j++;
+	}
+	new_env[j] = ft_strdup(tokens[1]); // Dodaj nową zmienną
+	new_env[j + 1] = NULL;
+
+	free(shell->custom_env); // Zwolnij starą tablicę
+	shell->custom_env = new_env; // Ustaw nową tablicę
+}
+
+void	builtin_env(t_shell *shell)
+{
+	int i = 0;
+
+	while (shell->custom_env && shell->custom_env[i])
+	{
+		if (shell->custom_env[i] != NULL) // Ignoruj "dziury"
+			printf("%s\n", shell->custom_env[i]);
 		i++;
 	}
 }
