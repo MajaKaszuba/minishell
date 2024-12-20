@@ -1,6 +1,5 @@
 # Minishell
 
-
 ## 🔄 Table of Contents
 - [Overview](#overview)
 - [Features](#features)
