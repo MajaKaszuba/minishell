@@ -1,6 +1,4 @@
-# 🏔️ Overview
-
-Welcome to **Minishell**, a minimalistic shell implemented in C. Inspired by Bash, this project replicates essential shell functionalities, focusing on command parsing, execution, and environment management. Developed as part of the **42 Cursus**, this project explores the inner workings of Unix shells.
+# Minishell
 
 ---
 
@@ -13,6 +11,12 @@ Welcome to **Minishell**, a minimalistic shell implemented in C. Inspired by Bas
 - [Externals](#externals)
 - [Project Structure](#project-structure)
 - [Credits](#credits)
+
+---
+
+## 🏔️ Overview
+
+Welcome to **Minishell**, a minimalistic shell implemented in C. Inspired by Bash, this project replicates essential shell functionalities, focusing on command parsing, execution, and environment management. Developed as part of the **42 Cursus**, this project explores the inner workings of Unix shells.
 
 ---
 
