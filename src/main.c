@@ -6,23 +6,144 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/20 14:24:58 by olaf             ###   ########.fr       */
+/*   Updated: 2024/12/22 21:14:32 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
+static void handle_pipes(char **commands, char **envp)
+{
+	int fd[2];
+	int prev_fd = 0;
+	pid_t pid;
+	int i = 0;
+	char **tokens;
+	char *path;
+
+	while (commands[i])
+	{
+		if (commands[i + 1] && pipe(fd) == -1) // Tworzymy potok
+		{
+			write(2, "pipe error\n", 11);
+			break;
+		}
+		pid = fork();
+		if (pid == -1)
+		{
+			write(2, "fork error\n", 11);
+			break;
+		}
+		if (pid == 0) // Proces potomny
+		{
+			if (prev_fd != 0)
+			{
+				dup2(prev_fd, STDIN_FILENO);
+				close(prev_fd);
+			}
+			if (commands[i + 1])
+				dup2(fd[1], STDOUT_FILENO);
+			close(fd[0]);
+			close(fd[1]);
+			tokens = ft_split(commands[i], ' ');
+			path = get_path(tokens[0]);
+			if (path)
+			{
+				execve(path, tokens, envp);
+				perror("execve");
+			}
+			else
+			{
+				write(2, "Command not found: ", 19);
+				write(2, tokens[0], ft_strlen(tokens[0]));
+				write(2, "\n", 1);
+			}
+			free_tokens(tokens);
+			exit(127);
+		}
+		else // Proces macierzysty
+		{
+			waitpid(pid, NULL, 0);
+			close(fd[1]);
+			if (prev_fd != 0)
+				close(prev_fd);
+			prev_fd = fd[0];
+		}
+		i++;
+	}
+	if (prev_fd != 0)
+		close(prev_fd);
+}
+
+static int handle_builtin(char **tokens, t_shell *shell)
+{
+	if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
+	{
+		write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
+		free_tokens(tokens);
+		free_custom_env(shell->custom_env);
+		clear_history();
+		exit(0);
+	}
+	else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
+		builtin_cd(tokens);
+	else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
+		builtin_unset(shell, tokens);
+	else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
+		builtin_export(shell, tokens);
+	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
+		builtin_env(shell);
+	else
+		return (0); // Nie znaleziono polecenia wbudowanego
+	return (1); // Polecenie wbudowane zostało obsłużone
+}
+
+static void handle_command(char **tokens, char **envp)
+{
+	pid_t pid;
+	char *path;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		write(2, "fork error\n", 11);
+		return;
+	}
+	if (pid == 0) // Proces potomny
+	{
+		if (handle_redirections(tokens) == -1)
+		{
+			write(2, "redirection error\n", 18);
+			free_tokens(tokens);
+			exit(EXIT_FAILURE);
+		}
+		if (ft_strchr(tokens[0], '/') && access(tokens[0], X_OK) == 0)
+			path = tokens[0];
+		else
+			path = get_path(tokens[0]);
+		if (path)
+		{
+			execve(path, tokens, envp);
+			perror("execve");
+		}
+		else
+		{
+			write(2, "Command not found: ", 19);
+			write(2, tokens[0], ft_strlen(tokens[0]));
+			write(2, "\n", 1);
+		}
+		free_tokens(tokens);
+		exit(127);
+	}
+	waitpid(pid, NULL, 0); // Proces macierzysty
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char	*path;
 	char	*input;
 	char	**tokens;
 	char	**commands;
-	int		fd[2];
-	int		prev_fd;
-	pid_t	pid;
 	t_shell	shell;
-	int		i;
 
 	(void)argc;
 	(void)argv;
@@ -44,64 +165,8 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strchr(input, '|'))
 		{
 			commands = ft_split(input, '|'); // Podział na fragmenty potoku
-			prev_fd = 0; // Brak poprzedniego potoku na początku
-			i = 0;
-			while (commands[i])
-			{
-				if (pipe(fd) == -1) // Tworzymy potok
-				{
-					write(2, "pipe error\n", 11);
-					break;
-				}
-				pid = fork();
-				if (pid == -1)
-				{
-					write(2, "fork error\n", 11);
-					break;
-				}
-				else if (pid == 0) // Proces potomny
-				{
-					if (prev_fd != 0) // Jeśli istnieje poprzedni potok, przekieruj wejście
-					{
-						dup2(prev_fd, STDIN_FILENO);
-						close(prev_fd);
-					}
-					if (commands[i + 1]) // Jeśli jest następne polecenie, ustaw wyjście do potoku
-					{
-						dup2(fd[1], STDOUT_FILENO);
-						close(fd[1]);
-					}
-					close(fd[0]); // Zamykamy niepotrzebne końcówki
-					tokens = ft_split(commands[i], ' '); // Tokenizacja bieżącego polecenia
-					path = get_path(tokens[0]); // Znajdujemy ścieżkę
-					if (path)
-					{
-						execve(path, tokens, envp); // Wykonujemy polecenie
-						perror("execve");
-						free_tokens(tokens);
-						exit(errno);
-					}
-					else
-					{
-						write(2, "Command not found: ", 19);
-						write(2, tokens[0], ft_strlen(tokens[0]));
-						write(2, "\n", 1);
-						exit(127);
-					}
-				}
-				else // Proces macierzysty
-				{
-					waitpid(pid, NULL, 0); // Czekamy na proces potomny
-					close(fd[1]); // Zamykamy końcówkę zapisu w macierzystym
-					if (prev_fd != 0)
-						close(prev_fd); // Zamykamy poprzedni potok
-					prev_fd = fd[0]; // Przechowujemy obecny potok dla następnego polecenia
-				}
-				i++;
-			}
-			close(prev_fd); // Zamykamy ostatni potok
-			free_tokens(commands); // Zwalniamy pamięć
-			free(input);
+			handle_pipes(commands, shell.envp);
+			free_tokens(commands);
 		}
 		else // Obsługa pojedynczych poleceń
 		{
@@ -120,51 +185,13 @@ int	main(int argc, char **argv, char **envp)
 			are_we_rich(tokens);
 
 			// Obsługa wbudowanych poleceń
-			if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
+			if (handle_builtin(tokens, &shell))
 			{
-				write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
 				free_tokens(tokens);
-				break;
+				continue;
 			}
-			else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
-				builtin_cd(tokens);
-			else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
-				builtin_unset(&shell, tokens);
-			else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
-				builtin_export(&shell, tokens);
-			else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
-				builtin_env(&shell);
 			else
-			{
-				pid = fork();
-				if (pid == 0)
-				{
-					if (handle_redirections(tokens) == -1)
-					{
-						write(2, "redirection error\n", 18);
-						free_tokens(tokens);
-						exit(EXIT_FAILURE);
-					}
-					path = get_path(tokens[0]);
-					if (path)
-					{
-						execve(path, tokens, envp);
-						perror("execve");
-						exit(errno);
-					}
-					else
-					{
-						write(2, "Command not found: ", 19);
-						write(2, tokens[0], ft_strlen(tokens[0]));
-						write(2, "\n", 1);
-						exit(127);
-					}
-				}
-				else if (pid > 0)
-					waitpid(pid, NULL, 0);
-				else
-					write(2, "fork error\n", 11);
-			}
+				handle_command(tokens, shell.envp);
 			free_tokens(tokens); // Zawsze zwalniamy pamięć po iteracji
 		}
 	}
