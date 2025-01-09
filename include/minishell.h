@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/20 13:51:39 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/09 18:03:16 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,6 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env);
 
 //executor.c
 char	*get_path(char *command);
-void	execution(char *command, char **tokens, char **envp);
-void	execute_pipes(char **commands, char **env);
-void	execute_single_command(char *command, char **env);
 
 //builtin.c
 void	builtin_cd(char **tokens);

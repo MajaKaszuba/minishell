@@ -6,11 +6,52 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/22 21:14:32 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/09 19:56:38 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+char *remove_quotes(char *str)
+{
+	char *result = malloc(ft_strlen(str) + 1);
+	int i = 0;
+	int j = 0;
+
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '"')
+			j++;
+		i++;
+	}
+	result = malloc(j + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '\'' && str[i] != '"')
+			result[j++] = str[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+void handle_quotes(char **tokens)
+{
+	int i = 0;
+	char *new_str;
+
+	while (tokens[i])
+	{
+		new_str = remove_quotes(tokens[i]);
+		free(tokens[i]);
+		tokens[i] = new_str;
+		i++;
+	}
+}
 
 static void handle_pipes(char **commands, char **envp)
 {
@@ -46,9 +87,13 @@ static void handle_pipes(char **commands, char **envp)
 			close(fd[0]);
 			close(fd[1]);
 			tokens = ft_split(commands[i], ' ');
+			handle_quotes(tokens);
 			path = get_path(tokens[0]);
 			if (path)
 			{
+				int fdDEBUG = open("debug", O_RDWR | O_APPEND, 0777);
+				write(fdDEBUG, tokens[1], 20);
+				close(fdDEBUG);
 				execve(path, tokens, envp);
 				perror("execve");
 			}
@@ -123,6 +168,9 @@ static void handle_command(char **tokens, char **envp)
 			path = get_path(tokens[0]);
 		if (path)
 		{
+			int fdDEBUG = open("debug", O_RDWR | O_APPEND, 0777);
+			write(fdDEBUG, tokens[1], 8);
+			close(fdDEBUG);
 			execve(path, tokens, envp);
 			perror("execve");
 		}
