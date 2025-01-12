@@ -6,11 +6,13 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/09 19:56:38 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/12 18:58:48 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
+
+int g_exit_status = 0;
 
 char *remove_quotes(char *str)
 {
@@ -108,7 +110,11 @@ static void handle_pipes(char **commands, char **envp)
 		}
 		else // Proces macierzysty
 		{
-			waitpid(pid, NULL, 0);
+			waitpid(pid, &g_exit_status, 0);
+			if (WIFEXITED(g_exit_status))
+			{
+				g_exit_status = WEXITSTATUS(g_exit_status);
+			}
 			close(fd[1]);
 			if (prev_fd != 0)
 				close(prev_fd);
@@ -128,16 +134,28 @@ static int handle_builtin(char **tokens, t_shell *shell)
 		free_tokens(tokens);
 		free_custom_env(shell->custom_env);
 		clear_history();
-		exit(0);
+		exit(g_exit_status); // Zakończ z ostatnim kodem wyjścia
 	}
 	else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
+	{
 		builtin_cd(tokens);
+		g_exit_status = 0; // Sukces
+	}
 	else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
+	{
 		builtin_unset(shell, tokens);
+		g_exit_status = 0; // Sukces
+	}
 	else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
+	{
 		builtin_export(shell, tokens);
+		g_exit_status = 0; // Sukces
+	}
 	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
+	{
 		builtin_env(shell);
+		g_exit_status = 0; // Sukces
+	}
 	else
 		return (0); // Nie znaleziono polecenia wbudowanego
 	return (1); // Polecenie wbudowane zostało obsłużone
@@ -183,7 +201,9 @@ static void handle_command(char **tokens, char **envp)
 		free_tokens(tokens);
 		exit(127);
 	}
-	waitpid(pid, NULL, 0); // Proces macierzysty
+	waitpid(pid, &g_exit_status, 0);
+	if (WIFEXITED(g_exit_status))
+		g_exit_status = WEXITSTATUS(g_exit_status);
 }
 
 int	main(int argc, char **argv, char **envp)

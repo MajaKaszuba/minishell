@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2024/12/20 13:55:38 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/12 18:57:38 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,19 @@ char	**init_env(char **envp)
 	return (new_env);
 }
 
-char	*get_env_value(char *token, int start, int end)
+char *get_env_value(char *token, int start, int end)
 {
-	char	*var_name;
-	char	*env_value;
+	char *var_name;
+	char *env_value;
 
 	var_name = ft_substr(token, start, end - start + 1);
 	if (!var_name)
 		return (ft_strdup(""));
+	if (ft_strncmp(var_name, "?", 2) == 0)
+	{
+		free(var_name);
+		return (ft_itoa(g_exit_status)); // Zwraca kod wyjścia jako string
+	}
 	env_value = getenv(var_name);
 	free(var_name);
 	if (!env_value)
@@ -75,18 +80,20 @@ char	*expand_env_variables(char *token)
 		if (token[i] == '$' && token[i + 1] != '\0')
 		{
 			start = i + 1;
-			while (token[i + 1] && (ft_isalnum(token[i + 1]) || token[i + 1] == '_'))
+			if (token[start] == '?') // Jeśli to $? - zamień na g_exit_status
+			{
+				env_value = ft_itoa(g_exit_status); // Zmieniamy na g_exit_status
 				i++;
-			env_value = get_env_value(token, start, i); // Pobierz wartość zmiennej
+			}
+			else
+			{
+				while (token[i + 1] && (ft_isalnum(token[i + 1]) || token[i + 1] == '_'))
+					i++;
+				env_value = get_env_value(token, start, i);
+			}
 			if (!env_value)
 				env_value = ft_strdup("");
-			if (!env_value)
-			{
-				free(result);
-				free(env_value);
-				return (ft_strdup("")); // Obsługa błędów pamięci
-			}
-			temp = ft_strjoin(result, env_value); // Połącz z wynikiem
+			temp = ft_strjoin(result, env_value); // Łączenie wyników
 			free(result);
 			free(env_value);
 			result = temp;
@@ -111,7 +118,7 @@ void	are_we_rich(char **tokens)
 	i = 0;
 	while (tokens[i])
 	{
-		if (ft_strchr(tokens[i], '$'))
+		if (ft_strchr(tokens[i], '$')) // Jeśli token zawiera $
 		{
 			expanded = expand_env_variables(tokens[i]); // Rozszerza zmienne
 			free(tokens[i]);
@@ -183,9 +190,8 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 	i = 0;
 	while (tokens[i])
 	{
-		if (tokens[i][0] == quote_type) // Znalezienie otwierającego cudzysłowu
+		if (tokens[i][0] == quote_type)
 		{
-			// Sprawdza, czy zamykający cudzysłów jest w tym samym tokenie
 			if (tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
 			{
 				merged = ft_strdup(tokens[i] + 1);
@@ -197,14 +203,12 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 				i++;
 				continue;
 			}
-			// Szukanie zamykającego cudzysłowu w innych tokenach
 			closing_quote = find_closing_quote(tokens, i, quote_type);
 			if (closing_quote == -1)
 			{
 				shell_error(ft_strjoin("unmatched ", ft_strjoin_char("", quote_type)), 2);
-				return ;
+				return;
 			}
-			// Łączenie tokenów w jeden ciąg
 			merged = merge_tokens(tokens, i, closing_quote, quote_type);
 			free(tokens[i]);
 			tokens[i] = merged;

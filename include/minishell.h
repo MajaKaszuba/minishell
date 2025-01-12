@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/09 18:03:16 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/12 18:41:08 by olaf             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ typedef struct	s_shell
 	char	**envp;         // Kopia envp
 	char	**custom_env;   // Custom zmienne dodane przez export
 }				t_shell;
+
+extern int	g_exit_status;
 
 //parser.c
 void	free_custom_env(char **custom_env);
