@@ -18,23 +18,15 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	len_s2;
 	char	*result;
 
-	if (!s1 || !s2) // Oba wskaźniki NULL
+	if (!s1 || !s2)
 		return (ft_strdup(""));
 	len_s1 = ft_strlen(s1);
 	len_s2 = ft_strlen(s2);
 	result = (char *)malloc(len_s1 + len_s2 + 1);
 	if (!result)
 		return (NULL);
-	ft_memcpy(result, s1, len_s1); // Kopiowanie pierwszego ciągu
-	ft_memcpy(result + len_s1, s2, len_s2); // Kopiowanie drugiego ciągu
-	result[len_s1 + len_s2] = '\0'; // Null terminator
+	ft_memcpy(result, s1, len_s1);
+	ft_memcpy(result + len_s1, s2, len_s2);
+	result[len_s1 + len_s2] = '\0';
 	return (result);
 }
-
-
-/*int main ()
-{
-	char s1[] = "hello";
-	char s2[] = "world";
-	printf("%s", ft_strjoin(s1, s2));
-}*/

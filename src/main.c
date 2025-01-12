@@ -12,14 +12,17 @@
 
 #include "../include/minishell.h"
 
-int g_exit_status = 0;
+int	g_exit_status = 0;
 
-char *remove_quotes(char *str)
+char	*remove_quotes(char *str)
 {
-	char *result = malloc(ft_strlen(str) + 1);
-	int i = 0;
-	int j = 0;
+	char	*result;
+	int		i;
+	int		j;
 
+	i = 0;
+	j = 0;
+	result = (char *)malloc(ft_strlen(str) + 1);
 	while (str[i])
 	{
 		if (str[i] != '\'' && str[i] != '"')
@@ -41,11 +44,12 @@ char *remove_quotes(char *str)
 	return (result);
 }
 
-void handle_quotes(char **tokens)
+void	handle_quotes(char **tokens)
 {
-	int i = 0;
-	char *new_str;
+	int		i;
+	char	*new_str;
 
+	i = 0;
 	while (tokens[i])
 	{
 		new_str = remove_quotes(tokens[i]);
@@ -55,29 +59,32 @@ void handle_quotes(char **tokens)
 	}
 }
 
-static void handle_pipes(char **commands, char **envp)
+static void	handle_pipes(char **commands, char **envp)
 {
-	int fd[2];
-	int prev_fd = 0;
-	pid_t pid;
-	int i = 0;
-	char **tokens;
-	char *path;
+	int		fddebug;
+	int		fd[2];
+	int		prev_fd;
+	pid_t	pid;
+	int		i;
+	char	**tokens;
+	char	*path;
 
+	i = 0;
+	prev_fd = 0;
 	while (commands[i])
 	{
-		if (commands[i + 1] && pipe(fd) == -1) // Tworzymy potok
+		if (commands[i + 1] && pipe(fd) == -1)
 		{
 			write(2, "pipe error\n", 11);
-			break;
+			break ;
 		}
 		pid = fork();
 		if (pid == -1)
 		{
 			write(2, "fork error\n", 11);
-			break;
+			break ;
 		}
-		if (pid == 0) // Proces potomny
+		if (pid == 0)
 		{
 			if (prev_fd != 0)
 			{
@@ -93,9 +100,9 @@ static void handle_pipes(char **commands, char **envp)
 			path = get_path(tokens[0]);
 			if (path)
 			{
-				int fdDEBUG = open("debug", O_RDWR | O_APPEND, 0777);
-				write(fdDEBUG, tokens[1], 20);
-				close(fdDEBUG);
+				fddebug = open("debug", O_RDWR | O_APPEND, 0777);
+				write(fddebug, tokens[1], 20);
+				close(fddebug);
 				execve(path, tokens, envp);
 				perror("execve");
 			}
@@ -108,7 +115,7 @@ static void handle_pipes(char **commands, char **envp)
 			free_tokens(tokens);
 			exit(127);
 		}
-		else // Proces macierzysty
+		else
 		{
 			waitpid(pid, &g_exit_status, 0);
 			if (WIFEXITED(g_exit_status))
@@ -126,7 +133,7 @@ static void handle_pipes(char **commands, char **envp)
 		close(prev_fd);
 }
 
-static int handle_builtin(char **tokens, t_shell *shell)
+static int	handle_builtin(char **tokens, t_shell *shell)
 {
 	if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
 	{
@@ -134,45 +141,46 @@ static int handle_builtin(char **tokens, t_shell *shell)
 		free_tokens(tokens);
 		free_custom_env(shell->custom_env);
 		clear_history();
-		exit(g_exit_status); // Zakończ z ostatnim kodem wyjścia
+		exit(g_exit_status);
 	}
 	else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
 	{
 		builtin_cd(tokens);
-		g_exit_status = 0; // Sukces
+		g_exit_status = 0;
 	}
 	else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
 	{
 		builtin_unset(shell, tokens);
-		g_exit_status = 0; // Sukces
+		g_exit_status = 0;
 	}
 	else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
 	{
 		builtin_export(shell, tokens);
-		g_exit_status = 0; // Sukces
+		g_exit_status = 0;
 	}
 	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
 	{
 		builtin_env(shell);
-		g_exit_status = 0; // Sukces
+		g_exit_status = 0;
 	}
 	else
-		return (0); // Nie znaleziono polecenia wbudowanego
-	return (1); // Polecenie wbudowane zostało obsłużone
+		return (0);
+	return (1);
 }
 
-static void handle_command(char **tokens, char **envp)
+static void	handle_command(char **tokens, char **envp)
 {
-	pid_t pid;
-	char *path;
+	pid_t	pid;
+	char	*path;
+	int		fddebug;
 
 	pid = fork();
 	if (pid == -1)
 	{
 		write(2, "fork error\n", 11);
-		return;
+		return ;
 	}
-	if (pid == 0) // Proces potomny
+	if (pid == 0)
 	{
 		if (handle_redirections(tokens) == -1)
 		{
@@ -186,9 +194,9 @@ static void handle_command(char **tokens, char **envp)
 			path = get_path(tokens[0]);
 		if (path)
 		{
-			int fdDEBUG = open("debug", O_RDWR | O_APPEND, 0777);
-			write(fdDEBUG, tokens[1], 8);
-			close(fdDEBUG);
+			fddebug = open("debug", O_RDWR | O_APPEND, 0777);
+			write(fddebug, tokens[1], 8);
+			close(fddebug);
 			execve(path, tokens, envp);
 			perror("execve");
 		}
@@ -215,57 +223,51 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	shell.envp = envp; // Oryginalne środowisko
-	shell.custom_env = NULL; // Customowe zmienne na początku są puste
-	setup_signal_handlers(); // Ustawienie sygnałów
+	shell.envp = envp;
+	shell.custom_env = NULL;
+	setup_signal_handlers();
 	shell.custom_env = init_env(envp);
 	while (1)
 	{
 		input = readline("\001\033[38;2;255;105;180m\002Barbie Bash 💅\001\033[0m\002: ");
-		if (!input) // Sprawdzenie, czy użytkownik nacisnął Ctrl+D
+		if (!input)
 		{
 			write(1, "\n\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
-			break;
+			break ;
 		}
-		if (*input) // Dodanie do historii tylko, jeśli coś podano
+		if (*input)
 			add_history(input);
-		// Wykrywanie `|` w poleceniach
 		if (ft_strchr(input, '|'))
 		{
-			commands = ft_split(input, '|'); // Podział na fragmenty potoku
+			commands = ft_split(input, '|');
 			handle_pipes(commands, shell.envp);
 			free_tokens(commands);
 		}
-		else // Obsługa pojedynczych poleceń
+		else
 		{
 			tokens = ft_split(input, ' ');
-			free(input); // Zwolnienie input
-
-			if (!tokens[0]) // Brak polecenia
+			free(input);
+			if (!tokens[0])
 			{
 				free_tokens(tokens);
-				continue;
+				continue ;
 			}
-
-			// Obsługa cudzysłowów i zmiennych
 			handle_bunnies(tokens, '\'', 0);
 			handle_bunnies(tokens, '"', 1);
 			are_we_rich(tokens);
-
-			// Obsługa wbudowanych poleceń
 			if (handle_builtin(tokens, &shell))
 			{
 				free_tokens(tokens);
-				continue;
+				continue ;
 			}
 			else
 				handle_command(tokens, shell.envp);
-			free_tokens(tokens); // Zawsze zwalniamy pamięć po iteracji
+			free_tokens(tokens);
 		}
 	}
 	free_custom_env(shell.custom_env);
-	clear_history(); // Czyści historię readline
-	rl_clear_history(); // Zwalnia pamięć historii readline
-	rl_free_line_state(); // Zwalnia pamięć stanu linii readline
+	clear_history();
+	rl_clear_history();
+	rl_free_line_state();
 	return (0);
 }

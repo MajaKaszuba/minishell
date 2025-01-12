@@ -19,8 +19,7 @@ int	validate_syntax(char **tokens)
 	i = 0;
 	while (tokens[i])
 	{
-		// Błędne znaki: ;;
-		if (ft_strncmp(tokens[i], ";", 2) == 0) // Porównanie znaku `;`
+		if (ft_strncmp(tokens[i], ";", 2) == 0)
 		{
 			if (!tokens[i + 1] || ft_strncmp(tokens[i + 1], ";", 2) == 0)
 			{
@@ -28,9 +27,7 @@ int	validate_syntax(char **tokens)
 				return (0);
 			}
 		}
-		// Błędne znaki: ><
-		if (ft_strncmp(tokens[i], ">", 2) == 0 && 
-			tokens[i + 1] && ft_strncmp(tokens[i + 1], "<", 2) == 0)
+		if (ft_strncmp(tokens[i], ">", 2) == 0 && tokens[i + 1] && ft_strncmp(tokens[i + 1], "<", 2) == 0)
 		{
 			shell_error("syntax error near unexpected token `><'", 2);
 			return (0);
@@ -75,22 +72,22 @@ void	shell_error(char *message, int exit_code)
 		write(2, message, ft_strlen(message));
 		write(2, "\n", 1);
 	}
-	if (exit_code >= 0 && exit_code != 1) // Tylko w przypadku krytycznego błędu
+	if (exit_code >= 0 && exit_code != 1)
 		exit(exit_code);
 }
 
-int is_valid_identifier(const char *str)
+int	is_valid_identifier(const char *str)
 {
 	int	i;
 
 	i = 0;
-	if (!str || !(ft_isalpha(str[0]) || str[0] == '_')) // Musi zaczynać się od litery lub '_'
+	if (!str || !(ft_isalpha(str[0]) || str[0] == '_'))
 		return (0);
 	while (str[i])
 	{
-		if (!(ft_isalnum(str[i]) || str[i] == '_' || str[i] == '=')) // Reszta musi być alfanumeryczna lub '_'
+		if (!(ft_isalnum(str[i]) || str[i] == '_' || str[i] == '='))
 			return (0);
 		i++;
 	}
-	return (1); // Jeśli wszystkie warunki spełnione
+	return (1);
 }

@@ -17,19 +17,19 @@ int	redirect_output(char *filename)
 	int	fd;
 
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd < 0)
-    {
+	if (fd < 0)
+	{
 		perror("open");
 		return (-1);
-    }
-    if (dup2(fd, STDOUT_FILENO) < 0) //przekierowanie stdout na plik
-    {
-    	perror("dup2");
-        close(fd);
-        return (-1);
-    }
-    close(fd);
-    return(0);
+	}
+	if (dup2(fd, STDOUT_FILENO) < 0)
+	{
+		perror("dup2");
+		close(fd);
+		return (-1);
+	}
+	close(fd);
+	return (0);
 }
 
 int	redirect_output_append(char *filename)
@@ -42,34 +42,34 @@ int	redirect_output_append(char *filename)
 		perror("open append");
 		return (-1);
 	}
-	if (dup2(fd, STDOUT_FILENO) < 0) //przekierowanie stdout na plik
+	if (dup2(fd, STDOUT_FILENO) < 0)
 	{
 		perror("dup2 append");
 		close(fd);
 		return (-1);
 	}
 	close(fd);
-	return(0);
+	return (0);
 }
 
 int	redirect_input(char *filename)
 {
 	int	fd;
 
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-    {
-    	perror("open");
-        return (-1);
-    }
-    if (dup2(fd, STDIN_FILENO) < 0) //przekierowanie stdin na plik
-    {
-    	perror("dup2");
-        close (fd);
-        return (-1);
-    }
-    close(fd);
-    return(0);
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+	{
+		perror("open");
+		return (-1);
+	}
+	if (dup2(fd, STDIN_FILENO) < 0)
+	{
+		perror("dup2");
+		close (fd);
+		return (-1);
+	}
+	close(fd);
+	return (0);
 }
 
 int	redirect_input_heredoc(char *delimiter)
@@ -88,12 +88,12 @@ int	redirect_input_heredoc(char *delimiter)
 		if (!line)
 		{
 			write(STDERR_FILENO, "warning: heredoc delimited by EOF\n", 34);
-			break;
+			break ;
 		}
 		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
 		write(pipe_fd[1], line, ft_strlen(line));
 		write(pipe_fd[1], "\n", 1);
@@ -107,18 +107,19 @@ int	redirect_input_heredoc(char *delimiter)
 		return (-1);
 	}
 	close(pipe_fd[0]);
-	return(0);
+	return (0);
 }
 
-int handle_redirections(char **tokens)
+int	handle_redirections(char **tokens)
 {
-	int i = 0;
+	int	i;
 
+	i = 0;
 	while (tokens[i])
 	{
-		if (ft_strncmp(tokens[i], ">>", 2) == 0) // Przekierowanie ">>"
+		if (ft_strncmp(tokens[i], ">>", 2) == 0)
 		{
-			if (!tokens[i + 1]) // Brak nazwy pliku
+			if (!tokens[i + 1])
 			{
 				write(STDERR_FILENO, "syntax error: expected filename after '>>'\n", 42);
 				return (-1);
@@ -129,9 +130,9 @@ int handle_redirections(char **tokens)
 			tokens[i + 1] = NULL;
 			i++;
 		}
-		else if (ft_strncmp(tokens[i], "<<", 2) == 0) // Przekierowanie "<<"
+		else if (ft_strncmp(tokens[i], "<<", 2) == 0)
 		{
-			if (!tokens[i + 1]) // Brak delimitera
+			if (!tokens[i + 1])
 			{
 				write(STDERR_FILENO, "syntax error: expected delimiter after '<<'\n", 43);
 				return (-1);
@@ -142,9 +143,9 @@ int handle_redirections(char **tokens)
 			tokens[i + 1] = NULL;
 			i++;
 		}
-		else if (ft_strchr(tokens[i], '>')) // Przekierowanie wyjścia ">"
+		else if (ft_strchr(tokens[i], '>'))
 		{
-			if (!tokens[i + 1]) // Brak nazwy pliku
+			if (!tokens[i + 1])
 			{
 				write(STDERR_FILENO, "syntax error: expected filename after '>'\n", 42);
 				return (-1);
@@ -155,9 +156,9 @@ int handle_redirections(char **tokens)
 			tokens[i + 1] = NULL;
 			i++;
 		}
-		else if (ft_strchr(tokens[i], '<')) // Przekierowanie wejścia "<"
+		else if (ft_strchr(tokens[i], '<'))
 		{
-			if (!tokens[i + 1]) // Brak nazwy pliku
+			if (!tokens[i + 1])
 			{
 				write(STDERR_FILENO, "syntax error: expected filename after '<'\n", 42);
 				return (-1);

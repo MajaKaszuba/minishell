@@ -14,20 +14,20 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
-# include <unistd.h> //fork and execve
+# include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <signal.h>
 # include <errno.h>
 # include <fcntl.h>
-# include <sys/wait.h> //waitpid
-# include <readline/history.h> //history library
-# include <readline/readline.h> //readline
+# include <sys/wait.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 
-typedef struct	s_shell
+typedef struct s_shell
 {
-	char	**envp;         // Kopia envp
-	char	**custom_env;   // Custom zmienne dodane przez export
+	char	**envp;
+	char	**custom_env;
 }				t_shell;
 
 extern int	g_exit_status;
@@ -57,11 +57,11 @@ void	sigint_handler(int signo);
 void	setup_signal_handlers(void);
 
 //redir.c
-int	redirect_output(char *filename);
-int	redirect_output_append(char *filename);
-int	redirect_input(char *filename);
-int	redirect_input_heredoc(char *delimiter);
-int	handle_redirections(char **tokens);
+int		redirect_output(char *filename);
+int		redirect_output_append(char *filename);
+int		redirect_input(char *filename);
+int		redirect_input_heredoc(char *delimiter);
+int		handle_redirections(char **tokens);
 
 //utils.c
 int		validate_syntax(char **tokens);
