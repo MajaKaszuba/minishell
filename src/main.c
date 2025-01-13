@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/12 18:58:48 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/13 16:18:40 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,12 +148,14 @@ static int	handle_builtin(char **tokens, t_shell *shell)
 		builtin_cd(tokens);
 		g_exit_status = 0;
 	}
-	else if (ft_strncmp(tokens[0], "unset", 5) == 0 && ft_strlen(tokens[0]) == 5)
+	else if (ft_strncmp(tokens[0], "unset", 5) == 0
+		&& ft_strlen(tokens[0]) == 5)
 	{
 		builtin_unset(shell, tokens);
 		g_exit_status = 0;
 	}
-	else if (ft_strncmp(tokens[0], "export", 6) == 0 && ft_strlen(tokens[0]) == 6)
+	else if (ft_strncmp(tokens[0], "export", 6) == 0
+		&& ft_strlen(tokens[0]) == 6)
 	{
 		builtin_export(shell, tokens);
 		g_exit_status = 0;

@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/12 18:57:38 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/13 16:16:02 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,8 @@ char	*expand_env_variables(char *token)
 			}
 			else
 			{
-				while (token[i + 1] && (ft_isalnum(token[i + 1]) || token[i + 1] == '_'))
+				while (token[i + 1] && (ft_isalnum(token[i + 1])
+						|| token[i + 1] == '_'))
 					i++;
 				env_value = get_env_value(token, start, i);
 			}

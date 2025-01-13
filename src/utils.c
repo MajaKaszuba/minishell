@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:29 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/12 18:41:19 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/13 16:20:08 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ int	validate_syntax(char **tokens)
 				return (0);
 			}
 		}
-		if (ft_strncmp(tokens[i], ">", 2) == 0 && tokens[i + 1] && ft_strncmp(tokens[i + 1], "<", 2) == 0)
+		if (ft_strncmp(tokens[i], ">", 2) == 0 && tokens[i + 1]
+			&& ft_strncmp(tokens[i + 1], "<", 2) == 0)
 		{
 			shell_error("syntax error near unexpected token `><'", 2);
 			return (0);

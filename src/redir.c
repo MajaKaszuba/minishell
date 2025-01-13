@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redir.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: olaf <olaf@student.1337.ma>                +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 18:09:39 by olaf              #+#    #+#             */
-/*   Updated: 2025/01/12 18:41:15 by olaf             ###   ########.fr       */
+/*   Updated: 2025/01/13 16:19:23 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ int	redirect_input_heredoc(char *delimiter)
 			write(STDERR_FILENO, "warning: heredoc delimited by EOF\n", 34);
 			break ;
 		}
-		if (ft_strlen(line) == ft_strlen(delimiter) && ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
+		if (ft_strlen(line) == ft_strlen(delimiter)
+			&& ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
 		{
 			free(line);
 			break ;
