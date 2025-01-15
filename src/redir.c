@@ -122,7 +122,8 @@ int	handle_redirections(char **tokens)
 		{
 			if (!tokens[i + 1])
 			{
-				write(STDERR_FILENO, "syntax error: expected filename after '>>'\n", 42);
+				write(STDERR_FILENO,
+					"syntax error: expected filename after '>>'\n", 42);
 				return (-1);
 			}
 			if (redirect_output_append(tokens[i + 1]) == -1)
@@ -135,7 +136,8 @@ int	handle_redirections(char **tokens)
 		{
 			if (!tokens[i + 1])
 			{
-				write(STDERR_FILENO, "syntax error: expected delimiter after '<<'\n", 43);
+				write(STDERR_FILENO,
+					"syntax error: expected delimiter after '<<'\n", 43);
 				return (-1);
 			}
 			if (redirect_input_heredoc(tokens[i + 1]) == -1)
@@ -148,7 +150,8 @@ int	handle_redirections(char **tokens)
 		{
 			if (!tokens[i + 1])
 			{
-				write(STDERR_FILENO, "syntax error: expected filename after '>'\n", 42);
+				write(STDERR_FILENO,
+					"syntax error: expected filename after '>'\n", 42);
 				return (-1);
 			}
 			if (redirect_output(tokens[i + 1]) == -1)
@@ -161,7 +164,8 @@ int	handle_redirections(char **tokens)
 		{
 			if (!tokens[i + 1])
 			{
-				write(STDERR_FILENO, "syntax error: expected filename after '<'\n", 42);
+				write(STDERR_FILENO,
+					"syntax error: expected filename after '<'\n", 42);
 				return (-1);
 			}
 			if (redirect_input(tokens[i + 1]) == -1)

@@ -59,17 +59,14 @@ void	handle_quotes(char **tokens)
 	}
 }
 
-static void	handle_pipes(char **commands, char **envp)
+static void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 {
 	int		fddebug;
 	int		fd[2];
 	int		prev_fd;
 	pid_t	pid;
-	int		i;
-	char	**tokens;
 	char	*path;
 
-	i = 0;
 	prev_fd = 0;
 	while (commands[i])
 	{
@@ -157,7 +154,7 @@ static int	handle_builtin(char **tokens, t_shell *shell)
 	else if (ft_strncmp(tokens[0], "export", 6) == 0
 		&& ft_strlen(tokens[0]) == 6)
 	{
-		builtin_export(shell, tokens);
+		builtin_export(shell, tokens, 1, 0, 0);
 		g_exit_status = 0;
 	}
 	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
@@ -231,7 +228,8 @@ int	main(int argc, char **argv, char **envp)
 	shell.custom_env = init_env(envp);
 	while (1)
 	{
-		input = readline("\001\033[38;2;255;105;180m\002Barbie Bash 💅\001\033[0m\002: ");
+		input = readline(
+				"\001\033[38;2;255;105;180m\002Barbie Bash 💅\001\033[0m\002: ");
 		if (!input)
 		{
 			write(1, "\n\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
@@ -242,7 +240,7 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strchr(input, '|'))
 		{
 			commands = ft_split(input, '|');
-			handle_pipes(commands, shell.envp);
+			handle_pipes(commands, shell.envp, tokens, 0);
 			free_tokens(commands);
 		}
 		else

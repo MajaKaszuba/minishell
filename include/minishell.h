@@ -49,7 +49,7 @@ char	*get_path(char *command);
 //builtin.c
 void	builtin_cd(char **tokens);
 void	builtin_unset(t_shell *shell, char **tokens);
-void	builtin_export(t_shell *shell, char **tokens);
+void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k);
 void	builtin_env(t_shell *shell);
 
 //signals.c

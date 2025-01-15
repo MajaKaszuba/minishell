@@ -136,7 +136,9 @@ int	find_closing_quote(char **tokens, int start, char quote_type)
 	i = start;
 	while (tokens[i])
 	{
-		if ((i == start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type) || (i != start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type))
+		if ((i == start && tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
+			|| (i != start && tokens[i][ft_strlen
+			(tokens[i]) - 1] == quote_type))
 			return (i);
 		i++;
 	}
@@ -204,7 +206,8 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 			closing_quote = find_closing_quote(tokens, i, quote_type);
 			if (closing_quote == -1)
 			{
-				shell_error(ft_strjoin("unmatched ", ft_strjoin_char("", quote_type)), 2);
+				shell_error(ft_strjoin
+					("unmatched ", ft_strjoin_char("", quote_type)), 2);
 				return ;
 			}
 			merged = merge_tokens(tokens, i, closing_quote, quote_type);
