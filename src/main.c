@@ -93,6 +93,12 @@ static void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 			close(fd[0]);
 			close(fd[1]);
 			tokens = ft_split(commands[i], ' ');
+			if (handle_redirections(tokens) == -1)
+			{
+				write(2, "redirection error\n", 18);
+				free_tokens(tokens);
+				exit(EXIT_FAILURE);
+			}
 			handle_quotes(tokens);
 			path = get_path(tokens[0]);
 			if (path)
