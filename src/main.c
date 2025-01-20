@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/13 16:18:40 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:51:15 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,13 +138,35 @@ static void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 
 static int	handle_builtin(char **tokens, t_shell *shell)
 {
+	int		is_num;
+	char	*arg;
+
 	if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
 	{
-		write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
-		free_tokens(tokens);
-		free_custom_env(shell->custom_env);
-		clear_history();
-		exit(g_exit_status);
+		is_num = 1;
+		if (tokens[1])
+		{
+			arg = tokens[1];
+			while(*arg)
+			{
+				if (ft_isdigit(*arg) == 0)
+				{
+					is_num = 0;
+					break ;
+				}
+				arg++;
+			}
+		}
+		if (!tokens[1] || is_num)
+		{
+			write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
+			free_tokens(tokens);
+			free_custom_env(shell->custom_env);
+			clear_history();
+			exit (g_exit_status);
+		}
+		else
+			write(1, "Invalid exit argument\n", 22);
 	}
 	else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
 	{
