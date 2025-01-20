@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/20 15:51:15 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/20 19:56:26 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ static int	handle_builtin(char **tokens, t_shell *shell)
 		if (tokens[1])
 		{
 			arg = tokens[1];
-			while(*arg)
+			while (*arg)
 			{
 				if (ft_isdigit(*arg) == 0)
 				{
@@ -280,9 +280,13 @@ int	main(int argc, char **argv, char **envp)
 				free_tokens(tokens);
 				continue ;
 			}
-			handle_bunnies(tokens, '\'', 0);
-			handle_bunnies(tokens, '"', 1);
-			are_we_rich(tokens);
+			if (ft_strchr(tokens[1], '"') || ft_strchr(tokens[1], '\''))
+			{
+				handle_bunnies(tokens, '\'', 0);
+				handle_bunnies(tokens, '"', 1);
+			}
+			else
+				are_we_rich(tokens);
 			if (handle_builtin(tokens, &shell))
 			{
 				free_tokens(tokens);

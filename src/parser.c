@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/13 16:16:02 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:46:43 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ void	are_we_rich(char **tokens)
 	i = 0;
 	while (tokens[i])
 	{
-		if (ft_strchr(tokens[i], '$'))
+		if (ft_strchr(tokens[i], '$') && tokens[i][0] != '\'')
 		{
 			expanded = expand_env_variables(tokens[i]);
 			free(tokens[i]);
@@ -198,7 +198,7 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 				merged[ft_strlen(merged) - 1] = '\0';
 				free(tokens[i]);
 				tokens[i] = merged;
-				if (expand_env)
+				if (expand_env && quote_type == '"')
 					are_we_rich(tokens + i);
 				i++;
 				continue ;
@@ -213,7 +213,7 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 			merged = merge_tokens(tokens, i, closing_quote, quote_type);
 			free(tokens[i]);
 			tokens[i] = merged;
-			if (expand_env)
+			if (expand_env && quote_type == '"')
 				are_we_rich(tokens + i);
 			remove_merged_tokens(tokens, i, closing_quote);
 		}

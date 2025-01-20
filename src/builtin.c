@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:15 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/13 16:17:19 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/01/20 15:53:00 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k)
 	char	*equal_sign;
 	char	**new_env;
 	char	**new_tokens;
+
 	i = 1;
 	while (shell->custom_env && shell->custom_env[j])
 		j++;
