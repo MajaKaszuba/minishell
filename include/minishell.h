@@ -38,6 +38,8 @@ char	**init_env(char **envp);
 char	*get_env_value(char *token, int start, int end);
 char	*expand_env_variables(char *token);
 void	are_we_rich(char **tokens);
+
+//parser_help.c
 int		find_closing_quote(char **tokens, int start, char quote_type);
 char	*merge_tokens(char **tokens, int start, int end, char quote_type);
 void	remove_merged_tokens(char **tokens, int start, int end);
@@ -49,7 +51,7 @@ char	*get_path(char *command);
 //builtin.c
 void	builtin_cd(char **tokens);
 void	builtin_unset(t_shell *shell, char **tokens);
-void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k);
+void	builtin_export(t_shell *shell, char **tokens, int i, int j);
 void	builtin_env(t_shell *shell);
 
 //signals.c
@@ -69,5 +71,9 @@ void	free_tokens(char **tokens);
 char	*ft_strjoin_char(char *s, char c);
 void	shell_error(char *message, int exit_code);
 int		is_valid_identifier(const char *str);
+
+//utils_help.c
+char	*remove_quotes(char *str);
+void	handle_quotes(char **tokens);
 
 #endif

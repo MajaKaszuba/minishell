@@ -23,7 +23,9 @@ OBJ_DIR = obj
 
 SRCS = $(SRC_DIR)/main.c \
 		$(SRC_DIR)/utils.c \
+		$(SRC_DIR)/utils_help.c \
 		$(SRC_DIR)/parser.c \
+		$(SRC_DIR)/parser_help.c \
 		$(SRC_DIR)/executor.c \
 		$(SRC_DIR)/builtin.c \
 		$(SRC_DIR)/signals.c \

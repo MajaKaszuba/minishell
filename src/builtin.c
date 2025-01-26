@@ -60,7 +60,7 @@ void	builtin_unset(t_shell *shell, char **tokens)
 	}
 }
 
-void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k)
+void	builtin_export(t_shell *shell, char **tokens, int i, int j) //zmieniłam k na j zeby nie bylo 5 argumentow
 {
 	char	*name;
 	char	*value;
@@ -72,10 +72,11 @@ void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k)
 	while (shell->custom_env && shell->custom_env[j])
 		j++;
 	new_env = malloc(sizeof(char *) * (j + 2));
-	while (shell->custom_env && shell->custom_env[k])
+	j = 0;
+	while (shell->custom_env && shell->custom_env[j])
 	{
-		new_env[k] = shell->custom_env[k];
-		k++;
+		new_env[j] = shell->custom_env[j];
+		j++;
 	}
 	while (tokens[i])
 	{
@@ -88,8 +89,8 @@ void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k)
 			if (is_valid_identifier(name))
 			{
 				setenv(name, value, 1);
-				new_env[k] = ft_strdup(tokens[1]);
-				new_env[k + 1] = NULL;
+				new_env[j] = ft_strdup(tokens[1]);
+				new_env[j + 1] = NULL;
 				free(shell->custom_env);
 				shell->custom_env = new_env;
 			}
@@ -102,8 +103,8 @@ void	builtin_export(t_shell *shell, char **tokens, int i, int j, int k)
 			if (is_valid_identifier(tokens[i]))
 			{
 				setenv(tokens[i], "", 1);
-				new_env[k] = ft_strdup(tokens[1]);
-				new_env[k + 1] = NULL;
+				new_env[j] = ft_strdup(tokens[1]);
+				new_env[j + 1] = NULL;
 				free(shell->custom_env);
 				shell->custom_env = new_env;
 			}

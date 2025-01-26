@@ -14,51 +14,6 @@
 
 int	g_exit_status = 0;
 
-char	*remove_quotes(char *str)
-{
-	char	*result;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	result = (char *)malloc(ft_strlen(str) + 1);
-	while (str[i])
-	{
-		if (str[i] != '\'' && str[i] != '"')
-			j++;
-		i++;
-	}
-	result = malloc(j + 1);
-	if (!result)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (str[i])
-	{
-		if (str[i] != '\'' && str[i] != '"')
-			result[j++] = str[i];
-		i++;
-	}
-	result[j] = '\0';
-	return (result);
-}
-
-void	handle_quotes(char **tokens)
-{
-	int		i;
-	char	*new_str;
-
-	i = 0;
-	while (tokens[i])
-	{
-		new_str = remove_quotes(tokens[i]);
-		free(tokens[i]);
-		tokens[i] = new_str;
-		i++;
-	}
-}
-
 static void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 {
 	int		fddebug;
@@ -182,7 +137,7 @@ static int	handle_builtin(char **tokens, t_shell *shell)
 	else if (ft_strncmp(tokens[0], "export", 6) == 0
 		&& ft_strlen(tokens[0]) == 6)
 	{
-		builtin_export(shell, tokens, 1, 0, 0);
+		builtin_export(shell, tokens, 1, 0);
 		g_exit_status = 0;
 	}
 	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
