@@ -220,7 +220,7 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (*input)
 			add_history(input);
-		if (ft_strchr(input, '|'))
+		if (input && ft_strchr(input, '|'))
 		{
 			commands = ft_split(input, '|');
 			handle_pipes(commands, shell.envp, tokens, 0);

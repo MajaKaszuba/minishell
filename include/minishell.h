@@ -52,6 +52,10 @@ char	*get_path(char *command);
 void	builtin_cd(char **tokens);
 void	builtin_unset(t_shell *shell, char **tokens);
 void	builtin_export(t_shell *shell, char **tokens, int i, int j);
+char	**copy_env(char **custom_env, int j);
+void	handle_export_token(char *token, char **new_env, int *j);
+void	process_env_var(char *name, char *value, char **new_env, int *j);
+void	add_empty_var(char *token, char **new_env, int *j);
 void	builtin_env(t_shell *shell);
 
 //signals.c

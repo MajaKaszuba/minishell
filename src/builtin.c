@@ -60,60 +60,86 @@ void	builtin_unset(t_shell *shell, char **tokens)
 	}
 }
 
-void	builtin_export(t_shell *shell, char **tokens, int i, int j) //zmieniłam k na j zeby nie bylo 5 argumentow
+void	builtin_export(t_shell *shell, char **tokens, int i, int j)
 {
+	char	**new_env;
+
+	i = 1;
+	new_env = copy_env(shell->custom_env, j);
+	if (!new_env)
+		return ;
+	while (tokens[i])
+	{
+		handle_export_token(tokens[i], new_env, &j);
+		i++;
+	}
+	new_env[j] = NULL;
+	free(shell->custom_env);
+	shell->custom_env = new_env;
+}
+
+char	**copy_env(char **custom_env, int j)
+{
+	char	**new_env;
+
+	while (custom_env && custom_env[j])
+		j++;
+	new_env = malloc(sizeof(char *) * (j + 2));
+	if (!new_env)
+		return (NULL);
+	j = 0;
+	while (custom_env && custom_env[j])
+	{
+		new_env[j] = custom_env[j];
+		j++;
+	}
+	return (new_env);
+}
+
+void	handle_export_token(char *token, char **new_env, int *j)
+{
+	char	**new_tokens;
 	char	*name;
 	char	*value;
 	char	*equal_sign;
-	char	**new_env;
-	char	**new_tokens;
 
-	i = 1;
-	while (shell->custom_env && shell->custom_env[j])
-		j++;
-	new_env = malloc(sizeof(char *) * (j + 2));
-	j = 0;
-	while (shell->custom_env && shell->custom_env[j])
+	equal_sign = ft_strchr(token, '=');
+	if (equal_sign)
 	{
-		new_env[j] = shell->custom_env[j];
-		j++;
+		new_tokens = ft_split(token, '=');
+		if (!new_tokens)
+			return ;
+		name = new_tokens[0];
+		value = new_tokens[1];
+		process_env_var(name, value, new_env, j);
+		free_tokens(new_tokens);
 	}
-	while (tokens[i])
+	else
+		add_empty_var(token, new_env, j);
+}
+
+void	process_env_var(char *name, char *value, char **new_env, int *j)
+{
+	if (is_valid_identifier(name))
 	{
-		equal_sign = ft_strchr(tokens[i], '=');
-		if (equal_sign)
-		{
-			new_tokens = ft_split(tokens[i], '=');
-			name = new_tokens[0];
-			value = new_tokens[1];
-			if (is_valid_identifier(name))
-			{
-				setenv(name, value, 1);
-				new_env[j] = ft_strdup(tokens[1]);
-				new_env[j + 1] = NULL;
-				free(shell->custom_env);
-				shell->custom_env = new_env;
-			}
-			else
-				shell_error(ft_strjoin
-					("export: not a valid identifier: ", tokens[i]), 1);
-		}
-		else
-		{
-			if (is_valid_identifier(tokens[i]))
-			{
-				setenv(tokens[i], "", 1);
-				new_env[j] = ft_strdup(tokens[1]);
-				new_env[j + 1] = NULL;
-				free(shell->custom_env);
-				shell->custom_env = new_env;
-			}
-			else
-				shell_error(ft_strjoin
-					("export: not a valid identifier: ", tokens[i]), 1);
-		}
-		i++;
+		setenv(name, value, 1);
+		new_env[*j] = ft_strdup(name);
+		(*j)++;
 	}
+	else
+		shell_error(ft_strjoin("export: not a valid identifier: ", name), 1);
+}
+
+void	add_empty_var(char *token, char **new_env, int *j)
+{
+	if (is_valid_identifier(token))
+	{
+		setenv(token, "", 1);
+		new_env[*j] = ft_strdup(token);
+		(*j)++;
+	}
+	else
+		shell_error(ft_strjoin("export: not a valid identifier: ", token), 1);
 }
 
 // void	builtin_export(t_shell *shell, char **tokens)
