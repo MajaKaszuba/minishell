@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:07 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/20 19:56:26 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/02 23:31:24 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,70 +91,100 @@ static void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 		close(prev_fd);
 }
 
-static int	handle_builtin(char **tokens, t_shell *shell)
+static void	builtin_help2(char **tokens, t_shell *shell)
+{
+	write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
+	free_tokens(tokens);
+	free_custom_env(shell->custom_env);
+	clear_history();
+	exit (g_exit_status);
+}
+
+static void	builtin_help(char **tokens, t_shell *shell)
 {
 	int		is_num;
 	char	*arg;
 
-	if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
+	is_num = 1;
+	if (tokens[1])
 	{
-		is_num = 1;
-		if (tokens[1])
+		arg = tokens[1];
+		while (*arg)
 		{
-			arg = tokens[1];
-			while (*arg)
+			if (ft_isdigit(*arg) == 0)
 			{
-				if (ft_isdigit(*arg) == 0)
-				{
-					is_num = 0;
-					break ;
-				}
-				arg++;
+				is_num = 0;
+				break ;
 			}
+			arg++;
 		}
-		if (!tokens[1] || is_num)
-		{
-			write(1, "\033[38;2;255;105;180mBye Bitch ;*\033[0m\n", 37);
-			free_tokens(tokens);
-			free_custom_env(shell->custom_env);
-			clear_history();
-			exit (g_exit_status);
-		}
-		else
-			write(1, "Invalid exit argument\n", 22);
 	}
+	if (!tokens[1] || is_num)
+		builtin_help2(tokens, shell);
+	else
+		write(1, "Invalid exit argument\n", 22);
+}
+
+static int	handle_builtin(char **tokens, t_shell *shell)
+{
+	if (ft_strncmp(tokens[0], "exit", 4) == 0 && ft_strlen(tokens[0]) == 4)
+		builtin_help(tokens, shell);
 	else if (ft_strncmp(tokens[0], "cd", 2) == 0 && ft_strlen(tokens[0]) == 2)
-	{
 		builtin_cd(tokens);
-		g_exit_status = 0;
-	}
 	else if (ft_strncmp(tokens[0], "unset", 5) == 0
 		&& ft_strlen(tokens[0]) == 5)
-	{
 		builtin_unset(shell, tokens);
-		g_exit_status = 0;
-	}
 	else if (ft_strncmp(tokens[0], "export", 6) == 0
 		&& ft_strlen(tokens[0]) == 6)
-	{
 		builtin_export(shell, tokens, 1, 0);
-		g_exit_status = 0;
-	}
 	else if (ft_strncmp(tokens[0], "env", 3) == 0 && ft_strlen(tokens[0]) == 3)
-	{
 		builtin_env(shell);
-		g_exit_status = 0;
-	}
 	else
 		return (0);
 	return (1);
 }
 
+static void	command_help2(char **tokens, char **envp)
+{
+	char	*path;
+	int		fddebug;
+
+	if (ft_strchr(tokens[0], '/') && access(tokens[0], X_OK) == 0)
+		path = tokens[0];
+	else
+		path = get_path(tokens[0]);
+	if (path)
+	{
+		fddebug = open("debug", O_RDWR | O_APPEND, 0777);
+		write(fddebug, tokens[1], 8);
+		close(fddebug);
+		execve(path, tokens, envp);
+		perror("execve");
+	}
+	else
+	{
+		write(2, "Command not found: ", 19);
+		write(2, tokens[0], ft_strlen(tokens[0]));
+		write(2, "\n", 1);
+	}
+}
+
+static void	command_help(char **tokens, char **envp)
+{
+	if (handle_redirections(tokens) == -1)
+	{
+		write(2, "redirection error\n", 18);
+		free_tokens(tokens);
+		exit(EXIT_FAILURE);
+	}
+	command_help2(tokens, envp);
+	free_tokens(tokens);
+	exit(127);
+}
+
 static void	handle_command(char **tokens, char **envp)
 {
 	pid_t	pid;
-	char	*path;
-	int		fddebug;
 
 	pid = fork();
 	if (pid == -1)
@@ -163,34 +193,7 @@ static void	handle_command(char **tokens, char **envp)
 		return ;
 	}
 	if (pid == 0)
-	{
-		if (handle_redirections(tokens) == -1)
-		{
-			write(2, "redirection error\n", 18);
-			free_tokens(tokens);
-			exit(EXIT_FAILURE);
-		}
-		if (ft_strchr(tokens[0], '/') && access(tokens[0], X_OK) == 0)
-			path = tokens[0];
-		else
-			path = get_path(tokens[0]);
-		if (path)
-		{
-			fddebug = open("debug", O_RDWR | O_APPEND, 0777);
-			write(fddebug, tokens[1], 8);
-			close(fddebug);
-			execve(path, tokens, envp);
-			perror("execve");
-		}
-		else
-		{
-			write(2, "Command not found: ", 19);
-			write(2, tokens[0], ft_strlen(tokens[0]));
-			write(2, "\n", 1);
-		}
-		free_tokens(tokens);
-		exit(127);
-	}
+		command_help(tokens, envp);
 	waitpid(pid, &g_exit_status, 0);
 	if (WIFEXITED(g_exit_status))
 		g_exit_status = WEXITSTATUS(g_exit_status);

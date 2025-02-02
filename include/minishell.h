@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/12 18:41:08 by olaf             ###   ########.fr       */
+/*   Updated: 2025/02/02 22:59:28 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@ typedef struct s_shell
 	char	**envp;
 	char	**custom_env;
 }				t_shell;
+
+typedef struct s_bunnies
+{
+	char	**tokens;
+	char	quote_type;
+	int		expand_env;
+	int		index;
+	char	*merged;
+}	t_bunnies;
 
 extern int	g_exit_status;
 

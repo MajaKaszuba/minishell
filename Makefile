@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+         #
+#    By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/27 15:43:33 by mkaszuba          #+#    #+#              #
-#    Updated: 2024/12/03 15:06:02 by mkaszuba         ###   ########.fr        #
+#    Updated: 2025/02/02 22:59:57 by mkaszuba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRCS = $(SRC_DIR)/main.c \
 		$(SRC_DIR)/builtin.c \
 		$(SRC_DIR)/signals.c \
 		$(SRC_DIR)/redir.c	\
+		$(SRC_DIR)/redir_help.c	\
 
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

@@ -72,16 +72,10 @@ int	redirect_input(char *filename)
 	return (0);
 }
 
-int	redirect_input_heredoc(char *delimiter)
+void	heredoc_help(char *delimiter, int pipe_fd[2])
 {
-	int		pipe_fd[2];
 	char	*line;
 
-	if (pipe(pipe_fd) == -1)
-	{
-		perror("pipe");
-		return (-1);
-	}
 	while (1)
 	{
 		line = readline("> ");
@@ -100,6 +94,18 @@ int	redirect_input_heredoc(char *delimiter)
 		write(pipe_fd[1], "\n", 1);
 		free(line);
 	}
+}
+
+int	redirect_input_heredoc(char *delimiter)
+{
+	int		pipe_fd[2];
+
+	if (pipe(pipe_fd) == -1)
+	{
+		perror("pipe");
+		return (-1);
+	}
+	heredoc_help(delimiter, pipe_fd);
 	close(pipe_fd[1]);
 	if (dup2(pipe_fd[0], STDIN_FILENO) < 0)
 	{
@@ -108,73 +114,5 @@ int	redirect_input_heredoc(char *delimiter)
 		return (-1);
 	}
 	close(pipe_fd[0]);
-	return (0);
-}
-
-int	handle_redirections(char **tokens)
-{
-	int	i;
-
-	i = 0;
-	while (tokens[i])
-	{
-		if (ft_strncmp(tokens[i], ">>", 2) == 0)
-		{
-			if (!tokens[i + 1])
-			{
-				write(STDERR_FILENO,
-					"syntax error: expected filename after '>>'\n", 42);
-				return (-1);
-			}
-			if (redirect_output_append(tokens[i + 1]) == -1)
-				return (-1);
-			tokens[i] = NULL;
-			tokens[i + 1] = NULL;
-			i++;
-		}
-		else if (ft_strncmp(tokens[i], "<<", 2) == 0)
-		{
-			if (!tokens[i + 1])
-			{
-				write(STDERR_FILENO,
-					"syntax error: expected delimiter after '<<'\n", 43);
-				return (-1);
-			}
-			if (redirect_input_heredoc(tokens[i + 1]) == -1)
-				return (-1);
-			tokens[i] = NULL;
-			tokens[i + 1] = NULL;
-			i++;
-		}
-		else if (ft_strchr(tokens[i], '>'))
-		{
-			if (!tokens[i + 1])
-			{
-				write(STDERR_FILENO,
-					"syntax error: expected filename after '>'\n", 42);
-				return (-1);
-			}
-			if (redirect_output(tokens[i + 1]) == -1)
-				return (-1);
-			tokens[i] = NULL;
-			tokens[i + 1] = NULL;
-			i++;
-		}
-		else if (ft_strchr(tokens[i], '<'))
-		{
-			if (!tokens[i + 1])
-			{
-				write(STDERR_FILENO,
-					"syntax error: expected filename after '<'\n", 42);
-				return (-1);
-			}
-			if (redirect_input(tokens[i + 1]) == -1)
-				return (-1);
-			tokens[i] = NULL;
-			tokens[i + 1] = NULL;
-			i++;
-		}
-		i++;
-	}
 	return (0);
 }

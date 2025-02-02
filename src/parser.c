@@ -64,13 +64,38 @@ char	*get_env_value(char *token, int start, int end)
 	return (ft_strdup(env_value));
 }
 
+char	*help_expand(char *temp, char *token, char *result, int i)
+{
+	int		start;
+	char	*env_value;
+
+	start = i + 1;
+	if (token[start] == '?')
+	{
+		env_value = ft_itoa(g_exit_status);
+		i++;
+	}
+	else
+	{
+		while (token[i + 1] && (ft_isalnum(token[i + 1])
+				|| token[i + 1] == '_'))
+			i++;
+		env_value = get_env_value(token, start, i);
+	}
+	if (!env_value)
+		env_value = ft_strdup("");
+	temp = ft_strjoin(result, env_value);
+	free(result);
+	free(env_value);
+	result = temp;
+	return (result);
+}
+
 char	*expand_env_variables(char *token)
 {
 	char	*temp;
 	char	*result;
-	char	*env_value;
 	int		i;
-	int		start;
 
 	result = ft_strdup("");
 	if (!result)
@@ -79,30 +104,10 @@ char	*expand_env_variables(char *token)
 	while (token[i])
 	{
 		if (token[i] == '$' && token[i + 1] != '\0')
-		{
-			start = i + 1;
-			if (token[start] == '?')
-			{
-				env_value = ft_itoa(g_exit_status);
-				i++;
-			}
-			else
-			{
-				while (token[i + 1] && (ft_isalnum(token[i + 1])
-						|| token[i + 1] == '_'))
-					i++;
-				env_value = get_env_value(token, start, i);
-			}
-			if (!env_value)
-				env_value = ft_strdup("");
-			temp = ft_strjoin(result, env_value);
-			free(result);
-			free(env_value);
-			result = temp;
-		}
+			result = help_expand(temp, token, result, i);
 		else
 		{
-			temp = ft_strjoin_char(result, token[i]);
+			temp = ft_strjoin_char(result, 0);
 			free(result);
 			result = temp;
 		}

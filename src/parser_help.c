@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_help.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/02 22:09:42 by mkaszuba          #+#    #+#             */
+/*   Updated: 2025/02/02 22:09:43 by mkaszuba         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 int	find_closing_quote(char **tokens, int start, char quote_type)
@@ -52,11 +64,42 @@ void	remove_merged_tokens(char **tokens, int start, int end)
 	}
 }
 
+void	bunnies_help(t_bunnies *b)
+{
+	int	closing_quote;
+
+	closing_quote = find_closing_quote(b->tokens, b->index, b->quote_type);
+	if (closing_quote == -1)
+	{
+		shell_error(ft_strjoin
+			("unmatched ", ft_strjoin_char("", b->quote_type)), 2);
+		return ;
+	}
+	b->merged = merge_tokens(b->tokens, b->index, closing_quote, b->quote_type);
+	free(b->tokens[b->index]);
+	b->tokens[b->index] = b->merged;
+	if (b->expand_env && b->quote_type == '"')
+		are_we_rich(b->tokens + b->index);
+	remove_merged_tokens(b->tokens, b->index, closing_quote);
+}
+
+void	handle_simple_quotes(
+	char **tokens, char quote_type, int expand_env, int i)
+{
+	char	*merged;
+
+	merged = ft_strdup(tokens[i] + 1);
+	merged[ft_strlen(merged) - 1] = '\0';
+	free(tokens[i]);
+	tokens[i] = merged;
+	if (expand_env && quote_type == '"')
+		are_we_rich(tokens + i);
+}
+
 void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 {
-	int		i;
-	int		closing_quote;
-	char	*merged;
+	int			i;
+	t_bunnies	b;
 
 	i = 0;
 	while (tokens[i])
@@ -65,30 +108,13 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 		{
 			if (tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
 			{
-				merged = ft_strdup(tokens[i] + 1);
-				merged[ft_strlen(merged) - 1] = '\0';
-				free(tokens[i]);
-				tokens[i] = merged;
-				if (expand_env && quote_type == '"')
-					are_we_rich(tokens + i);
+				handle_simple_quotes(tokens, quote_type, expand_env, i);
 				i++;
 				continue ;
 			}
-			closing_quote = find_closing_quote(tokens, i, quote_type);
-			if (closing_quote == -1)
-			{
-				shell_error(ft_strjoin
-					("unmatched ", ft_strjoin_char("", quote_type)), 2);
-				return ;
-			}
-			merged = merge_tokens(tokens, i, closing_quote, quote_type);
-			free(tokens[i]);
-			tokens[i] = merged;
-			if (expand_env && quote_type == '"')
-				are_we_rich(tokens + i);
-			remove_merged_tokens(tokens, i, closing_quote);
+			b = (t_bunnies){tokens, quote_type, expand_env, i, NULL};
+			bunnies_help(&b);
 		}
-		else
-			i++;
+		i++;
 	}
 }
