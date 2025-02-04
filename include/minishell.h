@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/02 22:59:28 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/05 00:01:28 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,9 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env);
 
 //executor.c
 char	*get_path(char *command);
+void	bunnies_help(t_bunnies *b);
+void	handle_simple_quotes(
+			char **tokens, char quote_type, int expand_env, int i);
 
 //builtin.c
 void	builtin_cd(char **tokens);
@@ -66,6 +69,12 @@ void	handle_export_token(char *token, char **new_env, int *j);
 void	process_env_var(char *name, char *value, char **new_env, int *j);
 void	add_empty_var(char *token, char **new_env, int *j);
 void	builtin_env(t_shell *shell);
+void	builtin_help2(char **tokens, t_shell *shell);
+void	builtin_help(char **tokens, t_shell *shell);
+
+//command.c
+void	handle_command(char **tokens, char **envp);
+void	handle_single_command(t_shell *shell, char *input);
 
 //signals.c
 void	sigint_handler(int signo);
@@ -77,6 +86,9 @@ int		redirect_output_append(char *filename);
 int		redirect_input(char *filename);
 int		redirect_input_heredoc(char *delimiter);
 int		handle_redirections(char **tokens);
+
+//pipes.c
+void	handle_pipes(char **commands, char **envp, char **tokens, int i);
 
 //utils.c
 int		validate_syntax(char **tokens);

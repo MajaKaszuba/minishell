@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:19 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/12 18:50:52 by olaf             ###   ########.fr       */
+/*   Updated: 2025/02/04 23:47:07 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,45 @@ char	*get_path(char *command)
 	}
 	free_tokens(paths);
 	return (NULL);
+}
+
+void	are_we_rich(char **tokens)
+{
+	int		i;
+	char	*expanded;
+
+	i = 0;
+	while (tokens[i])
+	{
+		if (ft_strchr(tokens[i], '$') && tokens[i][0] != '\'')
+		{
+			expanded = expand_env_variables(tokens[i]);
+			free(tokens[i]);
+			tokens[i] = expanded;
+		}
+		i++;
+	}
+}
+
+void	handle_bunnies(char **tokens, char quote_type, int expand_env)
+{
+	int			i;
+	t_bunnies	b;
+
+	i = 0;
+	while (tokens[i])
+	{
+		if (tokens[i][0] == quote_type)
+		{
+			if (tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
+			{
+				handle_simple_quotes(tokens, quote_type, expand_env, i);
+				i++;
+				continue ;
+			}
+			b = (t_bunnies){tokens, quote_type, expand_env, i, NULL};
+			bunnies_help(&b);
+		}
+		i++;
+	}
 }

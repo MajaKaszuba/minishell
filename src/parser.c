@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/01/20 17:46:43 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/04 23:46:42 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,22 +114,4 @@ char	*expand_env_variables(char *token)
 		i++;
 	}
 	return (result);
-}
-
-void	are_we_rich(char **tokens)
-{
-	int		i;
-	char	*expanded;
-
-	i = 0;
-	while (tokens[i])
-	{
-		if (ft_strchr(tokens[i], '$') && tokens[i][0] != '\'')
-		{
-			expanded = expand_env_variables(tokens[i]);
-			free(tokens[i]);
-			tokens[i] = expanded;
-		}
-		i++;
-	}
 }

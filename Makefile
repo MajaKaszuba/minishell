@@ -6,13 +6,13 @@
 #    By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/27 15:43:33 by mkaszuba          #+#    #+#              #
-#    Updated: 2025/02/02 22:59:57 by mkaszuba         ###   ########.fr        #
+#    Updated: 2025/02/04 23:58:38 by mkaszuba         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-CC = @cc
+CC = cc
 CFLAGS = -Wall -Wextra -Werror
 
 LIBFT_DIR = ./libft
@@ -28,7 +28,10 @@ SRCS = $(SRC_DIR)/main.c \
 		$(SRC_DIR)/parser_help.c \
 		$(SRC_DIR)/executor.c \
 		$(SRC_DIR)/builtin.c \
+		$(SRC_DIR)/builtin_help.c \
+		$(SRC_DIR)/pipes.c \
 		$(SRC_DIR)/signals.c \
+		$(SRC_DIR)/command.c \
 		$(SRC_DIR)/redir.c	\
 		$(SRC_DIR)/redir_help.c	\
 
@@ -47,7 +50,7 @@ $(LIBFT):
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@rm -f $(OBJS)

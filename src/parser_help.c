@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 22:09:42 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/02 22:09:43 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/04 23:47:02 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,27 +94,4 @@ void	handle_simple_quotes(
 	tokens[i] = merged;
 	if (expand_env && quote_type == '"')
 		are_we_rich(tokens + i);
-}
-
-void	handle_bunnies(char **tokens, char quote_type, int expand_env)
-{
-	int			i;
-	t_bunnies	b;
-
-	i = 0;
-	while (tokens[i])
-	{
-		if (tokens[i][0] == quote_type)
-		{
-			if (tokens[i][ft_strlen(tokens[i]) - 1] == quote_type)
-			{
-				handle_simple_quotes(tokens, quote_type, expand_env, i);
-				i++;
-				continue ;
-			}
-			b = (t_bunnies){tokens, quote_type, expand_env, i, NULL};
-			bunnies_help(&b);
-		}
-		i++;
-	}
 }
