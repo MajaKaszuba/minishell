@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:19 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:47:07 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/05 23:07:22 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,4 +79,24 @@ void	handle_bunnies(char **tokens, char quote_type, int expand_env)
 		}
 		i++;
 	}
+}
+
+void	handle_single_command(t_shell *shell, char *input)
+{
+	char	**tokens;
+
+	tokens = ft_split(input, ' ');
+	free(input);
+	if (!tokens[0])
+		return (free_tokens(tokens));
+	if (ft_strchr(tokens[1], '"') || ft_strchr(tokens[1], '\''))
+	{
+		handle_bunnies(tokens, '\'', 0);
+		handle_bunnies(tokens, '"', 1);
+	}
+	else
+		are_we_rich(tokens);
+	if (!handle_builtin(tokens, shell))
+		handle_command(tokens, shell->envp);
+	free_tokens(tokens);
 }

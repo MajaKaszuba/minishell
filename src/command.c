@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:57:38 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/05 00:00:33 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/05 23:07:02 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,32 @@ int	handle_builtin(char **tokens, t_shell *shell)
 	return (1);
 }
 
+static void	remove_quote(char **tokens)
+{
+	int		i;
+	char	*new_token;
+	size_t	len;
+
+	i = 0;
+	while (tokens[i])
+	{
+		if (tokens[i][0] == '"' || tokens[i][0] == '\'')
+		{
+			len = ft_strlen(tokens[i]);
+			new_token = ft_substr(tokens[i], 1, len - 2);
+			free(tokens[i]);
+			tokens[i] = new_token;
+		}
+		i++;
+	}
+}
+
 void	command_help2(char **tokens, char **envp)
 {
 	char	*path;
 	int		fddebug;
 
+	remove_quote(tokens);
 	if (ft_strchr(tokens[0], '/') && access(tokens[0], X_OK) == 0)
 		path = tokens[0];
 	else
@@ -84,24 +105,4 @@ void	handle_command(char **tokens, char **envp)
 	waitpid(pid, &g_exit_status, 0);
 	if (WIFEXITED(g_exit_status))
 		g_exit_status = WEXITSTATUS(g_exit_status);
-}
-
-void	handle_single_command(t_shell *shell, char *input)
-{
-	char	**tokens;
-
-	tokens = ft_split(input, ' ');
-	free(input);
-	if (!tokens[0])
-		return (free_tokens(tokens));
-	if (ft_strchr(tokens[1], '"') || ft_strchr(tokens[1], '\''))
-	{
-		handle_bunnies(tokens, '\'', 0);
-		handle_bunnies(tokens, '"', 1);
-	}
-	else
-		are_we_rich(tokens);
-	if (!handle_builtin(tokens, shell))
-		handle_command(tokens, shell->envp);
-	free_tokens(tokens);
 }

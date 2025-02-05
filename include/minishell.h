@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/05 00:01:28 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/05 23:08:26 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	builtin_help2(char **tokens, t_shell *shell);
 void	builtin_help(char **tokens, t_shell *shell);
 
 //command.c
+int		handle_builtin(char **tokens, t_shell *shell);
 void	handle_command(char **tokens, char **envp);
 void	handle_single_command(t_shell *shell, char *input);
 
