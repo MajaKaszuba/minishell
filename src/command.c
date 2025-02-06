@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:57:38 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/06 22:35:25 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 00:16:13 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,18 +54,14 @@ static void	remove_quote(char **tokens)
 void	command_help2(char **tokens, char **envp)
 {
 	char	*path;
-	int		fddebug;
 
 	remove_quote(tokens);
 	if (ft_strchr(tokens[0], '/') && access(tokens[0], X_OK) == 0)
 		path = tokens[0];
 	else
-		path = get_path(tokens[0]);
+		path = get_path(tokens[0], 0, NULL);
 	if (path)
 	{
-		fddebug = open("debug", O_RDWR | O_APPEND, 0777);
-		write(fddebug, tokens[1], 8);
-		close(fddebug);
 		execve(path, tokens, envp);
 		perror("execve");
 	}

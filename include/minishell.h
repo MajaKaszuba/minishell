@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/05 23:08:26 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 00:16:26 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	remove_merged_tokens(char **tokens, int start, int end);
 void	handle_bunnies(char **tokens, char quote_type, int expand_env);
 
 //executor.c
-char	*get_path(char *command);
+char	*get_path(char *command, int i, char *temp);
 void	bunnies_help(t_bunnies *b);
 void	handle_simple_quotes(
 			char **tokens, char quote_type, int expand_env, int i);

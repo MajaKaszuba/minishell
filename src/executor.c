@@ -6,15 +6,14 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:19 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/05 23:07:22 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 00:15:50 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	*get_path(char *command)
+char	*get_path(char *command, int i, char *temp)
 {
-	int		i;
 	char	*path_env;
 	char	**paths;
 	char	*full_path;
@@ -26,8 +25,9 @@ char	*get_path(char *command)
 	i = 0;
 	while (paths[i])
 	{
-		full_path = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(full_path, command);
+		temp = ft_strjoin(paths[i], "/");
+		full_path = ft_strjoin(temp, command);
+		free(temp);
 		if (access(full_path, X_OK) == 0)
 		{
 			free_tokens(paths);

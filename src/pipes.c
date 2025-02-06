@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:52:49 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/06 23:24:45 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 00:15:58 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	execute_command(char *cmd, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	handle_quotes(tokens);
-	path = get_path(tokens[0]);
+	path = get_path(tokens[0], 0, NULL);
 	if (!path)
 		cmd_not_found(tokens);
 	execve(path, tokens, envp);
