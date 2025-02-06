@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:48:12 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:59:33 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/06 22:32:42 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,14 @@ void	handle_export_token(char *token, char **new_env, int *j)
 
 void	process_env_var(char *name, char *value, char **new_env, int *j)
 {
+	char	*temp;
+
 	if (is_valid_identifier(name))
 	{
 		setenv(name, value, 1);
-		new_env[*j] = ft_strjoin(name, "=");
-		new_env[*j] = ft_strjoin(new_env[*j], value);
+		temp = ft_strjoin(name, "=");
+		new_env[*j] = ft_strjoin(temp, value);
+		free(temp);
 		(*j)++;
 	}
 	else

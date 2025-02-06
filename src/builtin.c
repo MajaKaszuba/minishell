@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:15 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:48:47 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/06 22:36:14 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,9 @@ void	builtin_export(t_shell *shell, char **tokens, int i, int j)
 	char	**new_env;
 
 	i = 1;
+	j = 0;
+	while (shell->custom_env && shell->custom_env[j])
+		j++;
 	new_env = malloc(sizeof(char *) * (j + 2));
 	if (!new_env)
 		return ;

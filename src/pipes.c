@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:52:49 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:53:53 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/06 23:24:45 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ void	handle_pipes(char **commands, char **envp, char **tokens, int i)
 	int		prev_fd;
 
 	(void)tokens;
-	(void)i;
 	prev_fd = 0;
 	i = 0;
 	while (commands[i])
