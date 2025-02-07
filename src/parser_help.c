@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_help.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 22:09:42 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:47:02 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 18:55:18 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	bunnies_help(t_bunnies *b)
 	if (closing_quote == -1)
 	{
 		shell_error(ft_strjoin
-			("unmatched ", ft_strjoin_char("", b->quote_type)), 2);
+			("unmatched ", ft_strjoin_char("", b->quote_type)), 1);
 		return ;
 	}
 	b->merged = merge_tokens(b->tokens, b->index, closing_quote, b->quote_type);
