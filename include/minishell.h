@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:36 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/07 00:16:26 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:57:00 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,36 +46,38 @@ void	free_custom_env(char **custom_env);
 char	**init_env(char **envp);
 char	*get_env_value(char *token, int start, int end);
 char	*expand_env_variables(char *token);
-void	are_we_rich(char **tokens);
 
 //parser_help.c
 int		find_closing_quote(char **tokens, int start, char quote_type);
 char	*merge_tokens(char **tokens, int start, int end, char quote_type);
 void	remove_merged_tokens(char **tokens, int start, int end);
-void	handle_bunnies(char **tokens, char quote_type, int expand_env);
-
-//executor.c
-char	*get_path(char *command, int i, char *temp);
 void	bunnies_help(t_bunnies *b);
 void	handle_simple_quotes(
 			char **tokens, char quote_type, int expand_env, int i);
+
+//executor.c
+char	*get_path(char *command, int i, char *temp);
+void	are_we_rich(char **tokens);
+void	handle_bunnies(char **tokens, char quote_type, int expand_env);
+void	handle_single_command(t_shell *shell, char *input);
 
 //builtin.c
 void	builtin_cd(char **tokens);
 void	builtin_unset(t_shell *shell, char **tokens);
 void	builtin_export(t_shell *shell, char **tokens, int i, int j);
 char	**copy_env(char **custom_env, int j);
+void	builtin_env(t_shell *shell);
+
+//builtin_help.c
 void	handle_export_token(char *token, char **new_env, int *j);
 void	process_env_var(char *name, char *value, char **new_env, int *j);
 void	add_empty_var(char *token, char **new_env, int *j);
-void	builtin_env(t_shell *shell);
 void	builtin_help2(char **tokens, t_shell *shell);
 void	builtin_help(char **tokens, t_shell *shell);
 
 //command.c
 int		handle_builtin(char **tokens, t_shell *shell);
 void	handle_command(char **tokens, char **envp);
-void	handle_single_command(t_shell *shell, char *input);
 
 //signals.c
 void	sigint_handler(int signo);
@@ -85,8 +87,12 @@ void	setup_signal_handlers(void);
 int		redirect_output(char *filename);
 int		redirect_output_append(char *filename);
 int		redirect_input(char *filename);
-int		redirect_input_heredoc(char *delimiter);
+int		get_input(char **line);
+void	better_readline(char *delimiter);
+
+//redir_help.c
 int		handle_redirections(char **tokens);
+
 
 //pipes.c
 void	handle_pipes(char **commands, char **envp, char **tokens, int i);

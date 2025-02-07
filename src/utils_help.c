@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   utils_help.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 22:09:25 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/07 00:05:47 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:59:04 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-void	find_quote(char *str, int i, int j)
+static void	find_quote(char *str, int i, int j)
 {
 	while (str[i])
 	{

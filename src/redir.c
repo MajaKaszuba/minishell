@@ -6,7 +6,7 @@
 /*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 18:09:39 by olaf              #+#    #+#             */
-/*   Updated: 2025/01/13 16:19:23 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:42:36 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,47 +72,55 @@ int	redirect_input(char *filename)
 	return (0);
 }
 
-void	heredoc_help(char *delimiter, int pipe_fd[2])
+int	get_input(char **line)
 {
-	char	*line;
+	char	*buffer;
+	char	c;
+	int		bytes_read;
+	int		i;
 
-	while (1)
+	i = 0;
+	bytes_read = 0;
+	buffer = (char *)malloc(1000);
+	if (!buffer)
+		return (-1);
+	write(0, "> ", 2);
+	bytes_read = read(0, &c, 1);
+	while (bytes_read && c != '\n' && c != '\0')
 	{
-		line = readline("> ");
-		if (!line)
-		{
-			write(STDERR_FILENO, "warning: heredoc delimited by EOF\n", 34);
-			break ;
-		}
-		if (ft_strlen(line) == ft_strlen(delimiter)
-			&& ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
-		{
-			free(line);
-			break ;
-		}
-		write(pipe_fd[1], line, ft_strlen(line));
-		write(pipe_fd[1], "\n", 1);
-		free(line);
+		if (c != '\n' && c != '\0')
+			buffer[i] = c;
+		i++;
+		bytes_read = read(0, &c, 1);
 	}
+	buffer[i] = '\n';
+	buffer[++i] = '\0';
+	*line = ft_strdup(buffer);
+	free(buffer);
+	return (bytes_read);
 }
 
-int	redirect_input_heredoc(char *delimiter)
+void	better_readline(char *delimiter)
 {
-	int		pipe_fd[2];
+	char	*line;
+	int		fd[2];
+	pid_t	line_reader;
 
-	if (pipe(pipe_fd) == -1)
+	if (pipe(fd) == -1)
+		shell_error("", 1);
+	line_reader = fork();
+	if(line_reader == 0)
 	{
-		perror("pipe");
-		return (-1);
+		close(fd[0]);
+		while(get_input(&line))
+		{
+			if(ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0)
+				exit(0);
+			write(fd[1], line, ft_strlen(line));
+			free(line);
+		}
 	}
-	heredoc_help(delimiter, pipe_fd);
-	close(pipe_fd[1]);
-	if (dup2(pipe_fd[0], STDIN_FILENO) < 0)
-	{
-		perror("dup2");
-		close(pipe_fd[0]);
-		return (-1);
-	}
-	close(pipe_fd[0]);
-	return (0);
+	close(fd[1]);
+	dup2(fd[0], STDIN_FILENO);
+	wait(NULL);
 }

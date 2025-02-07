@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   redir_help.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/02 22:09:20 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/02 22:09:21 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:56:50 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int	handle_append_redirection(char **tokens, int i)
+static int	handle_append_redirection(char **tokens, int i)
 {
 	if (!tokens[i + 1])
 	{
@@ -27,7 +27,7 @@ int	handle_append_redirection(char **tokens, int i)
 	return (1);
 }
 
-int	handle_heredoc_redirection(char **tokens, int i)
+static int	handle_heredoc_redirection(char **tokens, int i)
 {
 	if (!tokens[i + 1])
 	{
@@ -35,14 +35,13 @@ int	handle_heredoc_redirection(char **tokens, int i)
 			"syntax error: expected delimiter after '<<'\n", 43);
 		return (-1);
 	}
-	if (redirect_input_heredoc(tokens[i + 1]) == -1)
-		return (-1);
+	better_readline(tokens[i + 1]);
 	tokens[i] = NULL;
 	tokens[i + 1] = NULL;
 	return (1);
 }
 
-int	handle_output_redirection(char **tokens, int i)
+static int	handle_output_redirection(char **tokens, int i)
 {
 	if (!tokens[i + 1])
 	{
@@ -57,7 +56,7 @@ int	handle_output_redirection(char **tokens, int i)
 	return (1);
 }
 
-int	handle_input_redirection(char **tokens, int i)
+static int	handle_input_redirection(char **tokens, int i)
 {
 	if (!tokens[i + 1])
 	{

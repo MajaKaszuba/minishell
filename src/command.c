@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 23:57:38 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/07 00:16:13 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:49:24 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ static void	remove_quote(char **tokens)
 	}
 }
 
-void	command_help2(char **tokens, char **envp)
+static void	command_help2(char **tokens, char **envp)
 {
 	char	*path;
 
@@ -73,7 +73,7 @@ void	command_help2(char **tokens, char **envp)
 	}
 }
 
-void	command_help(char **tokens, char **envp)
+static void	command_help(char **tokens, char **envp)
 {
 	if (handle_redirections(tokens) == -1)
 	{

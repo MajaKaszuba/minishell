@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkaszuba <mkaszuba@student.42warsaw.pl>    +#+  +:+       +#+        */
+/*   By: mkaszuba <mkaszuba@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/27 15:43:26 by mkaszuba          #+#    #+#             */
-/*   Updated: 2025/02/04 23:46:42 by mkaszuba         ###   ########.fr       */
+/*   Updated: 2025/02/07 17:53:06 by mkaszuba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ char	*get_env_value(char *token, int start, int end)
 	return (ft_strdup(env_value));
 }
 
-char	*help_expand(char *temp, char *token, char *result, int i)
+static char	*help_expand(char *temp, char *token, char *result, int i)
 {
 	int		start;
 	char	*env_value;
